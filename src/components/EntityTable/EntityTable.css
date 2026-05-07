@@ -1,0 +1,106 @@
+.entity-table-container {
+  margin: 40px 0;
+  padding: 30px;
+  background-color: var(--color-black-soft);
+  border: 1px solid var(--color-red);
+  border-radius: 4px;
+}
+
+.entity-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.entity-table-header h2 {
+  font-size: 1.5rem;
+  color: var(--color-white);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0;
+}
+
+.search-wrapper {
+  position: relative;
+  max-width: 400px;
+  width: 100%;
+}
+
+.entity-search {
+  width: 100%;
+  padding: 12px 15px;
+  background-color: var(--color-black);
+  border: 1px solid var(--color-red);
+  color: var(--color-white);
+  border-radius: 4px;
+  font-family: inherit;
+  outline: none;
+  transition: box-shadow 0.3s ease;
+}
+
+.entity-search:focus {
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.entity-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.entity-table th {
+  padding: 15px;
+  border-bottom: 2px solid var(--color-red);
+  color: var(--color-white);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+.entity-table td {
+  padding: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--color-white-muted);
+  font-size: 0.95rem;
+}
+
+.entity-table tr:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 2px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.status-badge.boycott {
+  background-color: var(--color-red);
+  color: var(--color-white);
+}
+
+.status-badge.patriotic {
+  border: 1px solid var(--color-white);
+  color: var(--color-white);
+}
+
+.reason-cell {
+  max-width: 400px;
+  line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+  .entity-table-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

@@ -1,0 +1,129 @@
+/* ================================================
+   Boykotify - Global Tasarım Sistemi
+   Versiyon: 0.0.100
+   Palet: Siyah (#000), Kırmızı (#E30A17), Beyaz (#FFF)
+   ================================================ */
+
+/* CSS Değişkenleri (Design Tokens) */
+:root {
+  /* Ana Renkler */
+  --color-bg: #000000;
+  --color-surface: #0A0A0A;
+  --color-surface-elevated: #141414;
+  --color-border: #1F1F1F;
+  --color-border-hover: #2A2A2A;
+
+  /* Vurgu Renkleri */
+  --color-primary: #E30A17;
+  --color-primary-hover: #FF1A2A;
+  --color-primary-muted: rgba(227, 10, 23, 0.15);
+
+  /* Durum Renkleri */
+  --color-boycott: #E30A17;
+  --color-boycott-bg: rgba(227, 10, 23, 0.08);
+  --color-patriotic: #28A745;
+  --color-patriotic-bg: rgba(40, 167, 69, 0.08);
+  --color-all: #3B82F6;
+  --color-neutral: #555555;
+
+  /* Metin Renkleri */
+  --color-text: #FFFFFF;
+  --color-text-secondary: #A0A0A0;
+  --color-text-muted: #666666;
+
+  /* Tipografi */
+  --font-family: 'Poppins', sans-serif;
+  --font-heading: 'Teko', sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.5rem;
+  --font-size-2xl: 2rem;
+  --font-size-3xl: 2.5rem;
+  --font-size-hero: 3.5rem;
+
+  /* Ağırlıklar */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-black: 900;
+
+  /* Boşluklar */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  --spacing-3xl: 4rem;
+
+  /* Köşe Yuvarlaklıkları */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  /* Geçişler */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+}
+
+/* Global Sıfırlama */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--color-primary-hover);
+}
+
+/* Scrollbar Özelleştirme */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
+
+/* Seçim Rengi */
+::selection {
+  background: var(--color-primary);
+  color: var(--color-text);
+}

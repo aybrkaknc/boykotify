@@ -1,0 +1,395 @@
+/* ================================================
+   TrackList & TrackCard Bileşeni Stilleri
+   ================================================ */
+
+/* TrackList */
+.track-list {
+  width: 100%;
+  margin: 0;
+  padding: 0 0 var(--spacing-3xl);
+}
+
+.track-list__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-xl);
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+
+.track-list__filters {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.track-list__filter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.track-list__filter:hover {
+  border-color: var(--color-text-muted);
+}
+
+.track-list__filter--active {
+  background-color: var(--color-surface-elevated);
+  border-color: var(--color-text);
+  color: var(--color-text);
+}
+
+.track-list__filter--active.track-list__filter--boycott {
+  border-color: var(--color-boycott);
+  color: var(--color-boycott);
+}
+
+.track-list__filter--active.track-list__filter--patriotic {
+  border-color: var(--color-patriotic);
+  color: var(--color-patriotic);
+}
+
+.track-list__filter--active.track-list__filter--all {
+  border-color: var(--color-all);
+  color: var(--color-all);
+}
+
+.track-list__filter-count {
+  font-size: var(--font-size-sm);
+  opacity: 1;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+}
+
+/* Temizle Butonu */
+.track-list__remove-btn {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background-color: var(--color-boycott);
+  color: var(--color-text);
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.track-list__remove-btn:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-1px);
+}
+
+.track-list__remove-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Şarkı Grid */
+.track-list__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.track-list__empty {
+  text-align: center;
+  color: var(--color-text-muted);
+  padding: var(--spacing-3xl);
+  font-size: var(--font-size-lg);
+}
+
+/* ================================================
+   TrackCard
+   ================================================ */
+
+.track-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-fast);
+  cursor: default;
+}
+
+.track-card:hover {
+  background-color: var(--color-surface-elevated);
+  border-color: var(--color-border-hover);
+}
+
+/* Boykotlu Kart */
+.track-card--boycott {
+  border-color: var(--color-boycott);
+  background-color: var(--color-boycott-bg);
+}
+
+.track-card--boycott:hover {
+  border-color: var(--color-boycott);
+}
+
+/* Vatansever Kart */
+.track-card--patriotic {
+  border-color: var(--color-patriotic);
+  background-color: var(--color-patriotic-bg);
+}
+
+.track-card--patriotic:hover {
+  border-color: var(--color-patriotic);
+}
+
+/* Albüm Kapağı */
+.track-card__artwork {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+}
+
+.track-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+}
+
+.track-card__placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xl);
+  color: var(--color-text-muted);
+}
+
+/* Durum Rozeti */
+.track-card__badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  border: none;
+  z-index: 2;
+}
+
+button.track-card__remove-btn {
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+button.track-card__remove-btn:hover:not(:disabled) {
+  transform: scale(1.2);
+  background-color: #dc2626; /* Darker red on hover */
+}
+
+button.track-card__remove-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.track-card__badge--boycott {
+  background-color: var(--color-boycott);
+  color: var(--color-text);
+}
+
+.track-card__badge--patriotic {
+  background-color: var(--color-patriotic);
+  color: var(--color-text);
+}
+
+/* Şarkı Bilgisi */
+.track-card__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.track-card__name {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+
+.track-card__artist {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.track-card__album {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ================================================
+   Hover Popup (Boykot Nedeni)
+   ================================================ */
+
+.track-card__popup {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 280px;
+  padding: var(--spacing-md);
+  background-color: #1A1A1A;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  z-index: 150; /* Header'ın üzerinde kalsın diye artırıldı */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+/* Yukarı doğru açılacaksa */
+.track-card__popup--pos-top {
+  bottom: calc(100% + 8px);
+  top: auto;
+  transform: translateX(-50%) translateY(4px);
+}
+
+/* Aşağı doğru açılacaksa */
+.track-card__popup--pos-bottom {
+  top: calc(100% + 8px);
+  bottom: auto;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+.track-card:hover .track-card__popup--pos-top,
+.track-card:hover .track-card__popup--pos-bottom {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Popup Ok İşareti */
+.track-card__popup::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+}
+
+/* Yukarı doğru açılan popup'ın oku ALTA bakar */
+.track-card__popup--pos-top::after {
+  top: 100%;
+  border-top-color: #1A1A1A;
+}
+
+/* Aşağı doğru açılan popup'ın oku ÜSTE bakar */
+.track-card__popup--pos-bottom::after {
+  bottom: 100%;
+  border-bottom-color: #1A1A1A;
+}
+
+.track-card__popup-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+}
+
+.track-card__popup-status {
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.track-card__popup-status--boycott {
+  background-color: var(--color-boycott);
+  color: var(--color-text);
+}
+
+.track-card__popup-status--patriotic {
+  background-color: var(--color-patriotic);
+  color: var(--color-text);
+}
+
+.track-card__popup-entity {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.track-card__popup-reason {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin-bottom: var(--spacing-sm);
+}
+
+.track-card__popup-source {
+  font-size: var(--font-size-xs);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .track-list {
+    padding: 0 var(--spacing-md) var(--spacing-2xl);
+  }
+
+  .track-list__header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .track-list__filters {
+    flex-wrap: wrap;
+  }
+
+  .track-list__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .track-card__popup {
+    left: 0;
+    transform: translateX(0) translateY(4px);
+    width: 240px;
+  }
+
+  .track-card:hover .track-card__popup {
+    transform: translateX(0) translateY(0);
+  }
+}
