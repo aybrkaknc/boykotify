@@ -5,6 +5,7 @@
  * Spotify OAuth akışını, playlist taramayı ve sonuç gösterimini yönetir.
  */
 import { useState, useEffect, useCallback } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import Header from './components/Header/Header';
 import PlaylistInput from './components/PlaylistInput/PlaylistInput';
 import ScoreCard from './components/ScoreCard/ScoreCard';
@@ -215,7 +216,9 @@ export default function App() {
   const canRemove = !!user && !!currentPlaylistId;
 
   return (
-    <div className="app" id="app-root">
+    <>
+      <Analytics />
+      <div className="app" id="app-root">
       {/* Sol Kenar — Sonsuz Kayan Sanatçı Listesi */}
       <BoycottMarquee entities={allEntities} />
 
@@ -345,5 +348,6 @@ export default function App() {
         )}
       </main>
     </div>
+    </>
   );
 }
