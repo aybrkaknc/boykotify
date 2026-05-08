@@ -25,10 +25,11 @@ const BoycottMarquee = ({ entities }) => {
     return [...boycottedEntities, ...boycottedEntities];
   }, [entities]);
 
-  /** Sanatçı sayısına göre animasyon süresini dinamik ayarla (Yatay akış için daha hızlı) */
+  /** Sanatçı sayısına göre animasyon süresini dinamik ayarla (Reklam panosu gibi çok hızlı akması için) */
   const duration = useMemo(() => {
     const displayCount = marqueeItems.length / 2 || 1;
-    return Math.max(15, displayCount * 5);
+    // Her bir item için çok kısa bir süre (0.8sn) ayırıp toplam süreyi buluyoruz.
+    return Math.max(5, displayCount * 0.8);
   }, [marqueeItems]);
 
   if (marqueeItems.length === 0) return null;
