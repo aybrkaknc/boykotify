@@ -96,8 +96,8 @@ export function calculatePatriotScore(matchedTracks) {
   const patrioticCount = matchedTracks.filter(t => t.status === 'patriotic').length;
   const unknownCount = matchedTracks.filter(t => t.status === 'unknown').length;
 
-  /* Yeni Formül: Toplam şarkılar içindeki boykotlu olmayanların yüzdesi */
-  const score = total > 0 ? Math.round(100 - ((boycottCount / total) * 100)) : 100;
+  /* Yeni Formül: Toplam şarkılar içindeki boykotlu olmayanların yüzdesi (Hassas hesaplama için yuvarlama kaldırıldı) */
+  const score = total > 0 ? (100 - ((boycottCount / total) * 100)) : 100;
 
   return {
     score,

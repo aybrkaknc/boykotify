@@ -52,7 +52,7 @@ export default function ScoreCard({ stats }) {
       )}
 
       <div className="score-card__value">
-        <span className="score-card__number">%{score}</span>
+        <span className="score-card__number">%{Number.isInteger(score) ? score : score.toFixed(2)}</span>
       </div>
 
       <div className="score-card__info">
