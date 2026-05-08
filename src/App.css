@@ -269,7 +269,6 @@
 .app__footer {
   text-align: center;
   padding: var(--spacing-xl);
-  border-top: 1px solid var(--color-border);
 }
 
 .app__footer p {

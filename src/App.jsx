@@ -370,7 +370,20 @@ export default function App() {
       </main>
 
       <footer className="app__footer">
-        <p>Ne Mutlu Türk'üm Diyene! 🇹🇷</p>
+        <p>
+          Ne Mutlu Türk'üm Diyene!
+          <img 
+            src="https://flagcdn.com/w160/tr.png" 
+            alt="Türk Bayrağı" 
+            style={{ 
+              height: '14px', 
+              verticalAlign: 'middle', 
+              marginLeft: '8px',
+              borderRadius: '1px',
+              boxShadow: '0 0 2px rgba(0,0,0,0.5)'
+            }} 
+          />
+        </p>
       </footer>
     </div>
   );
