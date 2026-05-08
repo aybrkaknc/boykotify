@@ -71,7 +71,9 @@ export async function loginWithSpotify() {
   const codeVerifier = generateRandomString(64);
   const codeChallenge = await generateCodeChallenge(codeVerifier);
 
-  sessionStorage.setItem('spotify_code_verifier', codeVerifier);
+  // sessionStorage mobilde in-app browser veya Spotify app dönüşlerinde silinebiliyor.
+  // Bu yüzden daha kalıcı olan localStorage'ı kullanıyoruz.
+  localStorage.setItem('spotify_code_verifier', codeVerifier);
 
   const params = new URLSearchParams({
     response_type: 'code',
@@ -95,7 +97,7 @@ export async function loginWithSpotify() {
  * @returns {Promise<Object>} - Access token, refresh token ve süre bilgisi.
  */
 export async function exchangeCodeForToken(code) {
-  const codeVerifier = sessionStorage.getItem('spotify_code_verifier');
+  const codeVerifier = localStorage.getItem('spotify_code_verifier');
   
   if (!codeVerifier) {
     console.error('Hata: code_verifier bulunamadı. Lütfen girişi tekrar başlatın.');
@@ -124,6 +126,9 @@ export async function exchangeCodeForToken(code) {
   localStorage.setItem('spotify_access_token', data.access_token);
   localStorage.setItem('spotify_refresh_token', data.refresh_token);
   localStorage.setItem('spotify_token_expiry', Date.now() + data.expires_in * 1000);
+
+  // Güvenlik için kullanılmış code_verifier'ı temizle
+  localStorage.removeItem('spotify_code_verifier');
 
   return data;
 }
