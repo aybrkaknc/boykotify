@@ -111,6 +111,12 @@
 @media (max-width: 640px) {
   .header__inner {
     padding: var(--spacing-sm) var(--spacing-md);
+    justify-content: space-between; /* Mobilde buton ve logoyu iki yana ayır */
+  }
+
+  .header__brand {
+    position: static; /* Mobilde absolute ortalamayı iptal et */
+    transform: none;
   }
 
   .header__username {
@@ -118,6 +124,17 @@
   }
 
   .header__title {
-    font-size: var(--font-size-lg);
+    font-size: 1.5rem; /* Mobilde logoyu biraz küçült */
+    letter-spacing: 1px;
+  }
+
+  .header__btn {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 0.75rem; /* Buton metnini küçült */
+  }
+
+  .header__spotify-icon {
+    width: 16px;
+    height: 16px;
   }
 }
