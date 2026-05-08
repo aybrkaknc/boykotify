@@ -251,7 +251,12 @@ export default function App() {
           <section className="app__hero" id="hero-section">
             <div className="app__hero-content">
               <h2 className="app__hero-title">
-                Müziğinde <span className="app__hero-accent">İhanete</span> Yer Verme!
+                Müziğinde <a 
+                  href="https://www.youtube.com/playlist?list=PLCeSne8xqy-CaTlFHHzkrRA7bMASJCpSW" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="app__hero-accent app__hero-link"
+                >İhanete</a> Yer Verme!
               </h2>
               <p className="app__hero-description">
                 Kime destek olduğunu bil. Gözünden kaçanları biz yakalayalım, 

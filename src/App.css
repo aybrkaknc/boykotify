@@ -57,6 +57,19 @@
   color: var(--color-primary);
 }
 
+.app__hero-link {
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.app__hero-link:hover {
+  text-shadow: 0 0 15px var(--color-primary);
+  transform: scale(1.05);
+  filter: brightness(1.2);
+}
+
 .app__hero-description {
   font-size: var(--font-size-lg);
   color: var(--color-text-secondary);
