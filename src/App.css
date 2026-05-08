@@ -345,14 +345,18 @@
   }
 }
 
-/* Mobil için Marquee düzenlemeleri */
+/* Mobil için Marquee ve Footer düzenlemeleri */
 @media (max-width: 640px) {
   .app {
-    padding-bottom: 0; /* Alttaki marquee yukarı taşındığı için kaldırıldı */
+    padding-bottom: 0;
   }
   
   .app__main {
-    padding-top: calc(var(--spacing-xl) + 40px); /* Üstteki marquee'nin (40px) altında kalmaması için itildi */
+    padding-top: calc(var(--spacing-xl) + 40px);
+  }
+
+  .app__footer {
+    padding-bottom: calc(var(--spacing-xl) + env(safe-area-inset-bottom, 20px)); /* Sekme çubuğu için boşluk */
   }
 }
 
