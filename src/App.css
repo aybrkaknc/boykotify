@@ -4,6 +4,7 @@
 
 .app {
   min-height: 100vh;
+  min-height: 100dvh; /* Modern tarayıcılarda alt barı hesaba katar */
   display: flex;
   flex-direction: column;
   padding-bottom: 50px; /* Alt bar için yer açalım (40px bar + 10px nefes payı) */
@@ -356,7 +357,8 @@
   }
 
   .app__footer {
-    padding-bottom: calc(var(--spacing-xl) + env(safe-area-inset-bottom, 20px)); /* Sekme çubuğu için boşluk */
+    padding-bottom: 100px; /* Chrome alt barı için çok daha geniş bir güvenli alan */
+    padding-bottom: calc(60px + env(safe-area-inset-bottom, 40px));
   }
 }
 
