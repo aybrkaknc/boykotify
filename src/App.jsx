@@ -66,22 +66,39 @@ export default function App() {
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
 
-    if (!code) return;
-
-    /* URL'den code'u hemen temizle (çift çalışmayı önler) */
-    window.history.replaceState({}, document.title, '/');
+    if (!code) {
+      await checkExistingSession();
+      return;
+    }
 
     try {
       await exchangeCodeForToken(code);
+      /* Başarı sağlandıktan SONRA URL'den kodu temizle */
+      window.history.replaceState({}, document.title, '/');
       await loadUserProfile();
     } catch (err) {
       console.error('Token alınamadı:', err);
+      /* Hata durumunda da URL'yi temizle ki loop'a girmesin */
+      window.history.replaceState({}, document.title, '/');
+      
       setModalType('error');
       setError('Spotify hesabınızla bağlantı kurulamadı.');
-      setErrorSolution('Lütfen internet bağlantınızı kontrol edip sayfayı yenileyerek tekrar giriş yapmayı deneyin.');
-      setErrorDetails(err.stack || err.message || JSON.stringify(err));
+      setErrorSolution('Mobil cihazlarda "Özel Mod" (Incognito) kullanıyorsanız giriş başarısız olabilir. Lütfen normal sekmede deneyin.');
+      setErrorDetails(err.message);
     }
   }
+
+  /**
+   * useEffect içindeki akış: Önce callback (varsa), sonra mevcut oturum.
+   */
+  useEffect(() => {
+    const initApp = async () => {
+      await handleAuthCallback();
+      await loadAllEntities();
+    };
+    
+    initApp();
+  }, []);
 
   /**
    * localStorage'da mevcut bir oturum varsa profili yükler.
