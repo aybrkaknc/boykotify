@@ -114,3 +114,58 @@
 .score-card__metric--patriotic .score-card__metric-value {
   color: var(--color-patriotic);
 }
+
+/* Mobil Sticky Footer için Kompakt Tasarım */
+.app__mobile-scoreboard-wrapper .score-card {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  gap: var(--spacing-sm);
+  margin: 0;
+}
+
+.app__mobile-scoreboard-wrapper .score-card__playlist {
+  display: none; /* Mobilde yerden tasarruf için isim gizlenir */
+}
+
+.app__mobile-scoreboard-wrapper .score-card__info {
+  display: none; /* Sadece ana skora odaklanılır */
+}
+
+.app__mobile-scoreboard-wrapper .score-card__value {
+  margin: 0;
+}
+
+.app__mobile-scoreboard-wrapper .score-card__number {
+  font-size: 2.6rem;
+}
+
+.app__mobile-scoreboard-wrapper .score-card__metrics {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+  width: auto;
+  flex: 1;
+}
+
+.app__mobile-scoreboard-wrapper .score-card__metric {
+  padding: 4px 8px;
+  background-color: var(--color-surface);
+  flex-direction: column;
+  gap: 2px;
+  border: 1px solid var(--color-border);
+  flex: 0 1 auto;
+}
+
+.app__mobile-scoreboard-wrapper .score-card__metric-value {
+  font-size: 1.1rem;
+}
+
+.app__mobile-scoreboard-wrapper .score-card__metric-label {
+  font-size: 0.6rem;
+}

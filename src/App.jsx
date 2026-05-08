@@ -360,7 +360,9 @@ export default function App() {
                 >
                   ← BİR PLAYLİST DAHA TARA
                 </button>
-                <ScoreCard stats={stats} />
+                <div className="desktop-scoreboard-wrapper">
+                  <ScoreCard stats={stats} />
+                </div>
               </aside>
               <div className="app__results-content">
                 <TrackList
@@ -369,6 +371,11 @@ export default function App() {
                   onRemoveBoycotted={handleRemoveBoycotted}
                 />
               </div>
+            </div>
+            
+            {/* Mobil Sticky Bottom Scoreboard */}
+            <div className="app__mobile-scoreboard-wrapper">
+              <ScoreCard stats={stats} />
             </div>
           </>
         )}

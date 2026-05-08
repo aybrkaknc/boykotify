@@ -334,6 +334,11 @@
   min-width: 0; /* Taşmayı engelle */
 }
 
+/* Masaüstünde mobil scoreboard'u gizle */
+.app__mobile-scoreboard-wrapper {
+  display: none;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .app__hero {
@@ -357,6 +362,27 @@
     position: static;
     width: 100%;
   }
+
+  /* Mobilde masaüstü scoreboard'unu gizle */
+  .desktop-scoreboard-wrapper {
+    display: none;
+  }
+
+  /* Mobil Sticky Scoreboard Gösterimi */
+  .app__mobile-scoreboard-wrapper {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 90;
+    background-color: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid var(--color-border);
+    padding: var(--spacing-sm) var(--spacing-md);
+    padding-bottom: calc(var(--spacing-sm) + env(safe-area-inset-bottom, 10px));
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+  }
 }
 
 /* Mobil için Marquee ve Footer düzenlemeleri */
@@ -370,8 +396,8 @@
   }
 
   .app__footer {
-    padding-bottom: 100px; /* Chrome alt barı için çok daha geniş bir güvenli alan */
-    padding-bottom: calc(60px + env(safe-area-inset-bottom, 40px));
+    /* Sticky footer'ın yüksekliği kadar ekstra boşluk bırakalım (yaklaşık 150px) */
+    padding-bottom: calc(150px + env(safe-area-inset-bottom, 40px));
   }
 }
 
