@@ -16,7 +16,9 @@ export default function Header({ user, onLogin, onLogout }) {
     <header className="header" id="app-header">
       <div className="header__inner">
         <div className="header__brand">
-          <h1 className="header__title">Boykotify</h1>
+          <a href="/" className="header__logo-link">
+            <h1 className="header__title">Boykotify</h1>
+          </a>
         </div>
 
         <div className="header__actions">

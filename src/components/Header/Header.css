@@ -28,7 +28,7 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
-  pointer-events: none; /* Altındaki elementlere tıklanabilsin */
+  pointer-events: auto;
 }
 
 .header__logo {
@@ -42,6 +42,17 @@
   letter-spacing: 2px;
   color: var(--color-text);
   text-transform: uppercase;
+  margin: 0;
+  transition: color var(--transition-fast);
+}
+
+.header__logo-link {
+  text-decoration: none;
+  display: block;
+}
+
+.header__logo-link:hover .header__title {
+  color: var(--color-primary);
 }
 
 .header__actions {
