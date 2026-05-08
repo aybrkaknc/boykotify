@@ -239,7 +239,7 @@ export default function App() {
   const canRemove = !!user && !!currentPlaylistId;
 
   return (
-    <div className="app" id="app-root">
+    <div className={`app ${hasResults ? 'app--has-results' : ''}`} id="app-root">
       {/* Sol Kenar — Sonsuz Kayan Sanatçı Listesi */}
       <BoycottMarquee entities={allEntities} />
 

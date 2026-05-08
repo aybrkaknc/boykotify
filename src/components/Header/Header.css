@@ -137,4 +137,9 @@
     width: 16px;
     height: 16px;
   }
+
+  /* Sonuçlar varken mobilde header'ı gizle */
+  .app--has-results .header {
+    display: none;
+  }
 }
