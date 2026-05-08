@@ -4,7 +4,7 @@
  * Boykotify uygulamasının kök bileşeni.
  * Spotify OAuth akışını, playlist taramayı ve sonuç gösterimini yönetir.
  */
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Header from './components/Header/Header';
 import PlaylistInput from './components/PlaylistInput/PlaylistInput';
 import ScoreCard from './components/ScoreCard/ScoreCard';
@@ -36,6 +36,9 @@ export default function App() {
   const [error, setError] = useState('');
   const [errorSolution, setErrorSolution] = useState('');
   const [errorDetails, setErrorDetails] = useState('');
+
+  /* OAuth'un çift çalışmasını engellemek için flag */
+  const authProcessed = useRef(false);
   const [showErrorDetails, setShowErrorDetails] = useState(false);
   const [modalType, setModalType] = useState('error'); // 'error' veya 'success'
   const [isCopied, setIsCopied] = useState(false);
@@ -72,9 +75,10 @@ export default function App() {
     }
 
     try {
-      await exchangeCodeForToken(code);
-      /* Başarı sağlandıktan SONRA URL'den kodu temizle */
+      /* Çift çalışmayı ve URL'de kod kalmasını önlemek için anında temizle */
       window.history.replaceState({}, document.title, '/');
+      
+      await exchangeCodeForToken(code);
       await loadUserProfile();
     } catch (err) {
       console.error('Token alınamadı:', err);
@@ -92,6 +96,9 @@ export default function App() {
    * useEffect içindeki akış: Önce callback (varsa), sonra mevcut oturum.
    */
   useEffect(() => {
+    if (authProcessed.current) return;
+    authProcessed.current = true;
+
     const initApp = async () => {
       await handleAuthCallback();
       await loadAllEntities();
