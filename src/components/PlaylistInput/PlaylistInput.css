@@ -125,10 +125,18 @@
   }
 
   .playlist-input__field-wrapper {
-    flex-direction: column;
+    flex-direction: row; /* Alt alta geçmesini iptal edip tek satıra sabitledim */
+    align-items: center;
+  }
+
+  .playlist-input__field {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm); /* Mobilde metni küçültelim */
   }
 
   .playlist-input__submit {
-    padding: var(--spacing-md);
+    padding: 0 var(--spacing-md);
+    font-size: 1.5rem; /* Ok işaretini mobilde küçülterek hizaladım */
+    transform: none; /* Mobilde dikey kaymayı sıfırla */
   }
 }
