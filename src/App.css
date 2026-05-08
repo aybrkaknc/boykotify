@@ -346,6 +346,17 @@
   }
 }
 
+/* Mobil için Marquee düzenlemeleri */
+@media (max-width: 640px) {
+  .app {
+    padding-bottom: 0; /* Alttaki marquee yukarı taşındığı için kaldırıldı */
+  }
+  
+  .app__main {
+    padding-top: calc(var(--spacing-xl) + 40px); /* Üstteki marquee'nin (40px) altında kalmaması için itildi */
+  }
+}
+
 /* Marquee sidebar gizlenince padding kaldır */
 @media (max-width: 1024px) {
   .app {

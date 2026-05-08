@@ -91,3 +91,13 @@
     display: block;
   }
 }
+
+/* Mobil görünüm (640px ve altı): Alt taraftan (sekme çubuğu arkası) kurtarıp Header'ın altına al */
+@media (max-width: 640px) {
+  .marquee-sidebar {
+    bottom: auto;
+    top: 70px; /* Header yüksekliği */
+    border-top: none;
+    border-bottom: 1px solid var(--color-border);
+  }
+}
