@@ -17,16 +17,21 @@ const BoycottMarquee = ({ entities }) => {
    */
   const marqueeItems = useMemo(() => {
     if (!entities || entities.length === 0) return [];
-    return [...entities, ...entities];
+    
+    /* Sadece boykot durumunda olanları filtrele */
+    const boycottedEntities = entities.filter(e => e.status === 'boycott');
+    if (boycottedEntities.length === 0) return [];
+
+    return [...boycottedEntities, ...boycottedEntities];
   }, [entities]);
 
   /** Sanatçı sayısına göre animasyon süresini dinamik ayarla (Yatay akış için daha hızlı) */
   const duration = useMemo(() => {
-    const baseCount = entities?.length || 1;
-    return Math.max(15, baseCount * 5);
-  }, [entities]);
+    const displayCount = marqueeItems.length / 2 || 1;
+    return Math.max(15, displayCount * 5);
+  }, [marqueeItems]);
 
-  if (!entities || entities.length === 0) return null;
+  if (marqueeItems.length === 0) return null;
 
   return (
     <aside
