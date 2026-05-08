@@ -25,6 +25,9 @@ export async function fetchAllEntities() {
     return getDemoEntities();
   }
 
+  /* Debug: Kaç kayıt geldiğini görelim */
+  console.log('Veritabanından çekilen toplam kayıt sayısı:', data?.length || 0);
+
   return data || [];
 }
 
