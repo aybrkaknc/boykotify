@@ -5,6 +5,7 @@
  * Spotify OAuth akışını, playlist taramayı ve sonuç gösterimini yönetir.
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import Header from './components/Header/Header';
 import PlaylistInput from './components/PlaylistInput/PlaylistInput';
 import ScoreCard from './components/ScoreCard/ScoreCard';
@@ -385,6 +386,8 @@ export default function App() {
           />
         </p>
       </footer>
+      
+      <Analytics />
     </div>
   );
 }
