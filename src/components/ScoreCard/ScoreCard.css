@@ -92,19 +92,88 @@
   padding: var(--spacing-xs) var(--spacing-md);
   background-color: var(--color-bg);
   border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  outline: none; /* Tarayıcı varsayılanını kapat */
+}
+
+.score-card__metric:hover {
+  background-color: transparent;
+}
+
+/* Hover Renkleri */
+.score-card__metric--all:hover {
+  border-color: var(--color-all);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.15);
+}
+
+.score-card__metric--boycott:hover {
+  border-color: var(--color-boycott);
+  box-shadow: 0 0 15px rgba(227, 10, 23, 0.15);
+}
+
+.score-card__metric--patriotic:hover {
+  border-color: var(--color-patriotic);
+  box-shadow: 0 0 15px rgba(40, 167, 69, 0.15);
+}
+
+.score-card__metric--unknown:hover {
+  border-color: #666;
+  box-shadow: 0 0 15px rgba(156, 163, 175, 0.1);
+}
+
+/* Active Renkleri (!important ile zorunlu) */
+.score-card__metric.active {
+  background-color: transparent;
+}
+
+/* Tümü - Mavi Glow */
+.score-card__metric--all.active {
+  border-color: var(--color-all) !important;
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.25) !important;
+}
+
+/* Boykotlu - Kırmızı Glow */
+.score-card__metric--boycott.active {
+  border-color: var(--color-boycott) !important;
+  box-shadow: 0 0 15px rgba(227, 10, 23, 0.25) !important;
+}
+
+/* Vatansever - Yeşil Glow */
+.score-card__metric--patriotic.active {
+  border-color: var(--color-patriotic) !important;
+  box-shadow: 0 0 15px rgba(40, 167, 69, 0.25) !important;
+}
+
+/* Alakasız - Gri Glow */
+.score-card__metric--unknown.active {
+  border-color: #666 !important;
+  box-shadow: 0 0 15px rgba(156, 163, 175, 0.2) !important;
 }
 
 .score-card__metric-value {
   font-family: var(--font-heading);
   font-size: 1.4rem;
   letter-spacing: 1px;
+  color: var(--color-text); /* Değerler her zaman net olsun */
 }
 
 .score-card__metric-label {
   font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
+  color: var(--color-text-secondary); /* Daha görünür bir gri */
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+.score-card__metric.active .score-card__metric-label,
+.score-card__metric:hover .score-card__metric-label {
+  color: var(--color-text); /* Aktif/Hover durumda tam beyaz */
+}
+
+.score-card__metric--all .score-card__metric-value {
+  color: var(--color-all);
 }
 
 .score-card__metric--boycott .score-card__metric-value {
@@ -160,12 +229,68 @@
   gap: 2px;
   border: 1px solid var(--color-border);
   flex: 0 1 auto;
+  width: auto;
+  outline: none;
+}
+
+.app__mobile-scoreboard-wrapper .score-card__metric:hover {
+  background-color: transparent;
+}
+
+.app__mobile-scoreboard-wrapper .score-card__metric--all:hover {
+  border-color: var(--color-all);
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.15);
+}
+
+.app__mobile-scoreboard-wrapper .score-card__metric--boycott:hover {
+  border-color: var(--color-boycott);
+  box-shadow: 0 0 10px rgba(227, 10, 23, 0.15);
+}
+
+.app__mobile-scoreboard-wrapper .score-card__metric--patriotic:hover {
+  border-color: var(--color-patriotic);
+  box-shadow: 0 0 10px rgba(40, 167, 69, 0.15);
+}
+
+.app__mobile-scoreboard-wrapper .score-card__metric--unknown:hover {
+  border-color: #666;
+  box-shadow: 0 0 10px rgba(156, 163, 175, 0.1);
+}
+
+.app__mobile-scoreboard-wrapper .score-card__metric.active {
+  background-color: transparent;
+}
+
+.app__mobile-scoreboard-wrapper .score-card__metric--all.active {
+  border-color: var(--color-all) !important;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.25) !important;
+}
+
+.app__mobile-scoreboard-wrapper .score-card__metric--boycott.active {
+  border-color: var(--color-boycott) !important;
+  box-shadow: 0 0 10px rgba(227, 10, 23, 0.25) !important;
+}
+
+.app__mobile-scoreboard-wrapper .score-card__metric--patriotic.active {
+  border-color: var(--color-patriotic) !important;
+  box-shadow: 0 0 10px rgba(40, 167, 69, 0.25) !important;
+}
+
+.app__mobile-scoreboard-wrapper .score-card__metric--unknown.active {
+  border-color: #666 !important;
+  box-shadow: 0 0 10px rgba(156, 163, 175, 0.2) !important;
 }
 
 .app__mobile-scoreboard-wrapper .score-card__metric-value {
   font-size: 1.1rem;
+  color: var(--color-text);
 }
 
 .app__mobile-scoreboard-wrapper .score-card__metric-label {
   font-size: 0.6rem;
+  color: var(--color-text-secondary);
+}
+
+.app__mobile-scoreboard-wrapper .score-card__metric.active .score-card__metric-label {
+  color: var(--color-text);
 }

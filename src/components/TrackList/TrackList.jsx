@@ -13,18 +13,16 @@
 import { useState, useRef } from 'react';
 import './TrackList.css';
 
-export default function TrackList({ tracks, canRemove, onRemoveBoycotted }) {
-  const [filter, setFilter] = useState('all');
+export default function TrackList({ tracks, activeFilter = 'all', canRemove, onRemoveBoycotted, onRefresh, isLoading }) {
   const [isRemoving, setIsRemoving] = useState(false);
 
   const boycottedTracks = tracks.filter(t => t.status === 'boycott');
 
   /**
    * Şarkıları aktif filtreye göre süzer.
-   * @returns {Array} - Filtrelenmiş şarkı listesi.
    */
   function getFilteredTracks() {
-    switch (filter) {
+    switch (activeFilter) {
       case 'boycott':
         return tracks.filter(t => t.status === 'boycott');
       case 'patriotic':
@@ -54,22 +52,23 @@ export default function TrackList({ tracks, canRemove, onRemoveBoycotted }) {
   return (
     <section className="track-list" id="track-list-section">
       <div className="track-list__header">
-        <div className="track-list__filters">
-          {[
-            { key: 'all', label: 'Tümü', count: tracks.length },
-            { key: 'boycott', label: 'Boykotlu', count: tracks.filter(t => t.status === 'boycott').length },
-            { key: 'patriotic', label: 'Vatansever', count: tracks.filter(t => t.status === 'patriotic').length },
-            { key: 'unknown', label: 'Alakasız', count: tracks.filter(t => t.status === 'unknown').length }
-          ].map(f => (
-            <button
-              key={f.key}
-              className={`track-list__filter ${filter === f.key ? 'track-list__filter--active' : ''} track-list__filter--${f.key}`}
-              onClick={() => setFilter(f.key)}
-              id={`filter-${f.key}`}
+        <div className="track-list__title-wrapper">
+          <h2 className="track-list__title">
+            {activeFilter === 'all' && 'Tüm Şarkılar'}
+            {activeFilter === 'boycott' && 'Boykotlu Sanatçılar'}
+            {activeFilter === 'patriotic' && 'Vatansever Sanatçılar'}
+            {activeFilter === 'unknown' && 'İnceleme Altındakiler'}
+          </h2>
+          {onRefresh && (
+            <button 
+              className={`track-list__refresh-btn ${isLoading ? 'track-list__refresh-btn--loading' : ''}`}
+              onClick={onRefresh}
+              disabled={isLoading}
+              title="Listeyi Yenile"
             >
-              {f.label} <span className="track-list__filter-count">({f.count})</span>
+              ↻
             </button>
-          ))}
+          )}
         </div>
 
         {canRemove && boycottedTracks.length > 0 && (
@@ -96,7 +95,7 @@ export default function TrackList({ tracks, canRemove, onRemoveBoycotted }) {
       </div>
 
       {filteredTracks.length === 0 && (
-        <p className="track-list__empty">Bu filtrede şarkı bulunamadı.</p>
+        <p className="track-list__empty">Bu kategori tertemiz!</p>
       )}
     </section>
   );
@@ -116,12 +115,11 @@ function TrackCard({ track, canRemove, onRemove }) {
   const statusClass = track.status !== 'unknown' ? `track-card--${track.status}` : '';
   const [popupPos, setPopupPos] = useState('top');
   const cardRef = useRef(null);
+  const [isAnimatingOut, setIsAnimatingOut] = useState(false);
 
   const handleMouseEnter = () => {
     if (!cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
-    // Header yaklaşık 70px. Eğer kart ekranın üst yarısındaysa (veya ilk 300px), 
-    // popup yukarı taşmamak için aşağıya (bottom) render edilsin.
     if (rect.top < 250) {
       setPopupPos('bottom');
     } else {
@@ -129,9 +127,20 @@ function TrackCard({ track, canRemove, onRemove }) {
     }
   };
 
+  const handleAction = (e) => {
+    e.stopPropagation();
+    if (canRemove && onRemove) {
+      setIsAnimatingOut(true);
+      // Animasyon süresi 400ms (CSS ile uyumlu)
+      setTimeout(() => {
+        onRemove([track.uri]);
+      }, 400);
+    }
+  };
+
   return (
     <div 
-      className={`track-card ${statusClass}`} 
+      className={`track-card ${statusClass} ${isAnimatingOut ? 'track-card--removing' : ''}`} 
       id={`track-${track.id}`}
       ref={cardRef}
       onMouseEnter={handleMouseEnter}
@@ -142,23 +151,20 @@ function TrackCard({ track, canRemove, onRemove }) {
         ) : (
           <div className="track-card__placeholder">♪</div>
         )}
-        {track.status === 'boycott' && (
-          <button 
-            className={`track-card__badge track-card__badge--boycott ${canRemove ? 'track-card__remove-btn' : ''}`}
-            title={canRemove ? "Bu şarkıyı listeden çıkar" : "Boykotlu Şarkı"}
-            disabled={!canRemove}
-            onClick={(e) => {
-              if (canRemove && onRemove) {
-                e.stopPropagation();
-                onRemove([track.uri]);
-              }
-            }}
-          >
-            ✕
-          </button>
-        )}
         {track.status === 'patriotic' && <span className="track-card__badge track-card__badge--patriotic">★</span>}
       </div>
+
+      {/* Alakasız ve Vatansever şarkılar için sağ üst köşede beyaz silme butonu */}
+      {track.status !== 'boycott' && canRemove && (
+        <button 
+          className="track-card__remove-btn-minimal"
+          onClick={handleAction}
+          disabled={isAnimatingOut}
+          title="Listeden çıkar"
+        >
+          ✕
+        </button>
+      )}
 
       <div className="track-card__info">
         <h4 className="track-card__name">{track.name}</h4>
@@ -166,12 +172,22 @@ function TrackCard({ track, canRemove, onRemove }) {
         <p className="track-card__album">{track.album}</p>
       </div>
 
+      {track.status === 'boycott' && canRemove && (
+        <button 
+          className="track-card__action-btn"
+          onClick={handleAction}
+          disabled={isAnimatingOut}
+        >
+          {isAnimatingOut ? '...' : 'S*KTİR ET!'}
+        </button>
+      )}
+
       {/* Hover Popup - Boykot veya Vatansever bilgisi */}
       {track.entity && (
         <div className={`track-card__popup track-card__popup--pos-${popupPos}`}>
           <div className="track-card__popup-header">
             <span className={`track-card__popup-status track-card__popup-status--${track.status}`}>
-              {track.status === 'boycott' ? 'BOYKOT' : 'VATANSEVER'}
+              {track.status === 'boycott' ? 'BOYKOT' : track.status === 'patriotic' ? 'VATANSEVER' : 'BİLİNMİYOR'}
             </span>
             <span className="track-card__popup-entity">{track.entity.name}</span>
           </div>

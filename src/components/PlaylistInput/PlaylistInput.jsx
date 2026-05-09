@@ -51,11 +51,23 @@ export default function PlaylistInput({ onSubmit, isLoading }) {
               className="playlist-input__submit"
               disabled={isLoading || !inputValue.trim()}
               id="scan-button"
+              aria-label="Tarayıcıyı Başlat"
             >
               {isLoading ? (
                 <span className="playlist-input__spinner" />
               ) : (
-                '➜'
+                <svg 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="3" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  className="playlist-input__icon"
+                >
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
               )}
             </button>
           </div>

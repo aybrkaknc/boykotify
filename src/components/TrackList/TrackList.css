@@ -18,61 +18,53 @@
   gap: var(--spacing-md);
 }
 
-.track-list__filters {
+.track-list__title {
+  font-family: var(--font-heading);
+  font-size: 1.8rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--color-text);
+  margin: 0;
+  line-height: 1; /* Ekstra padding'i temizlemek için */
+}
+
+.track-list__title-wrapper {
   display: flex;
+  align-items: center;
   gap: var(--spacing-sm);
 }
 
-.track-list__filter {
-  display: inline-flex;
+.track-list__refresh-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-text);
+  font-size: 1.5rem;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: all var(--transition-fast);
+  padding: 4px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-sm) var(--spacing-md);
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  color: var(--color-text-secondary);
-  font-family: var(--font-family);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  line-height: 1;
-  cursor: pointer;
-  transition: all var(--transition-fast);
+  border-radius: 50%;
 }
 
-.track-list__filter:hover {
-  border-color: var(--color-text-muted);
-}
-
-.track-list__filter--active {
-  background-color: var(--color-surface-elevated);
-  border-color: var(--color-text);
-  color: var(--color-text);
-}
-
-.track-list__filter--active.track-list__filter--boycott {
-  border-color: var(--color-boycott);
-  color: var(--color-boycott);
-}
-
-.track-list__filter--active.track-list__filter--patriotic {
-  border-color: var(--color-patriotic);
-  color: var(--color-patriotic);
-}
-
-.track-list__filter--active.track-list__filter--all {
-  border-color: var(--color-all);
-  color: var(--color-all);
-}
-
-.track-list__filter-count {
-  font-size: var(--font-size-sm);
+.track-list__refresh-btn:hover:not(:disabled) {
   opacity: 1;
-  line-height: 1;
-  display: inline-flex;
-  align-items: center;
-  margin-left: 4px;
+  color: var(--color-primary);
+  transform: rotate(180deg);
+}
+
+.track-list__refresh-btn--loading {
+  animation: spin 1s linear infinite;
+  opacity: 1;
+  color: var(--color-primary);
+  pointer-events: none;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 /* Temizle Butonu */
@@ -132,7 +124,6 @@
 }
 
 .track-card:hover {
-  background-color: var(--color-surface-elevated);
   border-color: var(--color-border-hover);
 }
 
@@ -257,6 +248,61 @@ button.track-card__remove-btn:disabled {
   text-overflow: ellipsis;
 }
 
+/* S*ktir Et! Butonu */
+.track-card__action-btn {
+  padding: 4px 8px;
+  background-color: transparent;
+  color: var(--color-text);
+  border: none;
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+  margin-left: var(--spacing-sm);
+  opacity: 0.8;
+}
+
+.track-card__action-btn:hover {
+  color: var(--color-boycott);
+  opacity: 1;
+  text-shadow: 0 0 10px rgba(227, 10, 23, 0.4);
+  transform: translateX(2px);
+}
+
+/* Minimal Silme Butonu (Alakasız Şarkılar İçin) */
+.track-card__remove-btn-minimal {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: #FFFFFF;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.4;
+  transition: all var(--transition-fast);
+  z-index: 10;
+  padding: 4px;
+}
+
+.track-card__remove-btn-minimal:hover {
+  opacity: 1;
+  transform: scale(1.2);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+}
+
+/* Buton hoverlandığında tüm kartın büyümesi */
+.track-card:has(.track-card__action-btn:hover),
+.track-card:has(.track-card__remove-btn-minimal:hover) {
+  transform: scale(1.02);
+  z-index: 10;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
 /* ================================================
    Hover Popup (Boykot Nedeni)
    ================================================ */
@@ -362,6 +408,35 @@ button.track-card__remove-btn:disabled {
   font-size: var(--font-size-xs);
   color: var(--color-primary);
   font-weight: var(--font-weight-medium);
+}
+
+/* Yırtıcı Silme Animasyonu */
+.track-card--removing {
+  animation: predatoryOut 0.4s cubic-bezier(0.36, 0, 0.66, -0.56) forwards;
+  pointer-events: none;
+  z-index: 100;
+}
+
+@keyframes predatoryOut {
+  0% {
+    transform: scale(1) rotate(0);
+  }
+  15% {
+    transform: scale(1.1) rotate(-5deg);
+    box-shadow: 0 0 30px rgba(227, 10, 23, 0.6);
+  }
+  30% {
+    transform: scale(1.1) rotate(5deg) translateX(-10px);
+  }
+  50% {
+    transform: scale(0.8) rotate(-15deg) translateX(20px);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(0) rotate(45deg) translateX(200px);
+    opacity: 0;
+    filter: blur(10px);
+  }
 }
 
 /* Responsive */

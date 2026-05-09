@@ -16,9 +16,16 @@
   padding: var(--spacing-md) var(--spacing-xl);
   display: flex;
   align-items: center;
-  justify-content: flex-end; /* Butonları sağa it */
+  justify-content: space-between; /* İki yana yasla */
   position: relative;
   min-height: 70px;
+}
+
+.header__left {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  z-index: 10;
 }
 
 .header__brand {
@@ -118,15 +125,137 @@
   flex-shrink: 0;
 }
 
+/* Yardım Butonu ve Popup */
+.header__help {
+  position: relative;
+}
+
+.header__help-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-text-secondary);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.header__help-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+.header__help-btn:hover, .header__help-btn.active {
+  color: var(--color-primary);
+  filter: drop-shadow(0 0 5px rgba(227, 10, 23, 0.4));
+}
+
+.header__help-popup {
+  position: absolute;
+  top: 100%; /* Aradaki boşluğu kapatmak için 100% yapıldı */
+  padding-top: 15px; /* İçerik yine 15px aşağıdan başlasın */
+  left: 0;
+  width: 300px;
+  z-index: 1000;
+  animation: popupSlideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.header__help-content {
+  background-color: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+@keyframes popupSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header__help-section {
+  margin-bottom: var(--spacing-lg);
+}
+
+.header__help-section h4 {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  color: var(--color-primary);
+  letter-spacing: 1px;
+  margin-bottom: var(--spacing-xs);
+}
+
+.header__help-section p, .header__help-section li {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.header__help-section ol {
+  padding-left: var(--spacing-md);
+  margin-top: var(--spacing-xs);
+}
+
+.header__help-footer {
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+  text-align: center;
+}
+
+.header__help-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.header__help-link svg {
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.header__help-link:hover {
+  color: var(--color-text);
+}
+
+.header__help-link:hover svg {
+  opacity: 1;
+}
+
 /* Responsive */
 @media (max-width: 640px) {
   .header__inner {
     padding: var(--spacing-sm) var(--spacing-md);
-    justify-content: space-between; /* Mobilde buton ve logoyu iki yana ayır */
+    justify-content: space-between;
+  }
+
+  .header__left {
+    gap: var(--spacing-md);
+  }
+
+  .header__help-popup {
+    left: -10px; /* Mobilde kenara fazla yanaşmasın */
+    width: calc(100vw - 40px);
+    max-width: 300px;
   }
 
   .header__brand {
-    position: static; /* Mobilde absolute ortalamayı iptal et */
+    position: static;
     transform: none;
   }
 
@@ -135,17 +264,17 @@
   }
 
   .header__title {
-    font-size: 1.5rem; /* Mobilde logoyu biraz küçült */
+    font-size: 1.3rem;
     letter-spacing: 1px;
   }
 
   .header__btn {
-    padding: var(--spacing-xs) var(--spacing-sm);
-    font-size: 0.75rem; /* Buton metnini küçült */
+    padding: 6px 12px;
+    font-size: 0.75rem;
   }
 
   .header__spotify-icon {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
   }
 }

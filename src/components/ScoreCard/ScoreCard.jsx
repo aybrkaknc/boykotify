@@ -14,15 +14,13 @@
  */
 import './ScoreCard.css';
 
-export default function ScoreCard({ stats }) {
+export default function ScoreCard({ stats, activeFilter = 'all', onFilterChange }) {
   if (!stats) return null;
 
   const { score, total, boycottCount, patrioticCount, unknownCount, playlistInfo } = stats;
 
   /**
    * Skora göre durum metnini belirler.
-   * @param {number} score - Vatanseverlik skoru.
-   * @returns {string} - Durum açıklaması.
    */
   function getScoreLabel(score) {
     if (score >= 80) return 'Vatansever Playlist!';
@@ -33,14 +31,16 @@ export default function ScoreCard({ stats }) {
 
   /**
    * Skora göre renk sınıfını belirler.
-   * @param {number} score - Vatanseverlik skoru.
-   * @returns {string} - CSS modifier sınıfı.
    */
   function getScoreModifier(score) {
     if (score >= 80) return 'score-card--high';
     if (score >= 50) return 'score-card--medium';
     return 'score-card--low';
   }
+
+  const handleFilter = (key) => {
+    if (onFilterChange) onFilterChange(key);
+  };
 
   return (
     <section className={`score-card ${getScoreModifier(score)}`} id="score-card">
@@ -60,22 +60,37 @@ export default function ScoreCard({ stats }) {
       </div>
 
       <div className="score-card__metrics">
-        <div className="score-card__metric">
+        <button 
+          className={`score-card__metric score-card__metric--all ${activeFilter === 'all' ? 'active' : ''}`}
+          onClick={() => handleFilter('all')}
+        >
           <span className="score-card__metric-value">{total}</span>
-          <span className="score-card__metric-label">Toplam</span>
-        </div>
-        <div className="score-card__metric score-card__metric--boycott">
+          <span className="score-card__metric-label">Tümü</span>
+        </button>
+        
+        <button 
+          className={`score-card__metric score-card__metric--boycott ${activeFilter === 'boycott' ? 'active' : ''}`}
+          onClick={() => handleFilter('boycott')}
+        >
           <span className="score-card__metric-value">{boycottCount}</span>
           <span className="score-card__metric-label">Boykotlu</span>
-        </div>
-        <div className="score-card__metric score-card__metric--patriotic">
+        </button>
+        
+        <button 
+          className={`score-card__metric score-card__metric--patriotic ${activeFilter === 'patriotic' ? 'active' : ''}`}
+          onClick={() => handleFilter('patriotic')}
+        >
           <span className="score-card__metric-value">{patrioticCount}</span>
           <span className="score-card__metric-label">Vatansever</span>
-        </div>
-        <div className="score-card__metric">
+        </button>
+        
+        <button 
+          className={`score-card__metric score-card__metric--unknown ${activeFilter === 'unknown' ? 'active' : ''}`}
+          onClick={() => handleFilter('unknown')}
+        >
           <span className="score-card__metric-value">{unknownCount}</span>
           <span className="score-card__metric-label">Alakasız</span>
-        </div>
+        </button>
       </div>
     </section>
   );
