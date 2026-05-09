@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import './BoycottMarquee.css';
 
 /**
@@ -34,61 +34,13 @@ const BoycottMarquee = ({ entities }) => {
 
   if (marqueeItems.length === 0) return null;
 
-  const trackRef = useRef(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
-
-  // Mouse ile sürükleme (PC) için eventler
-  const handleMouseDown = (e) => {
-    setIsDragging(true);
-    setStartX(e.pageX - trackRef.current.offsetLeft);
-    setScrollLeft(trackRef.current.scrollLeft);
-  };
-
-  const handleMouseLeave = () => {
-    setIsDragging(false);
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
-  const handleMouseMove = (e) => {
-    if (!isDragging) return;
-    e.preventDefault();
-    const x = e.pageX - trackRef.current.offsetLeft;
-    const walk = (x - startX) * 1.5; // Sürükleme hızı çarpanı
-    trackRef.current.scrollLeft = scrollLeft - walk;
-  };
-
-  // JS tabanlı otomatik kaydırma (Auto-scroll) - Sürükleme yokken çalışır
-  useEffect(() => {
-    if (isDragging) return;
-    
-    const interval = setInterval(() => {
-      if (trackRef.current) {
-        trackRef.current.scrollLeft += 1; // Hızı buradan ayarlayabiliriz
-      }
-    }, 25);
-
-    return () => clearInterval(interval);
-  }, [isDragging]);
-
   return (
     <aside
       className="marquee-sidebar"
       style={{ '--marquee-duration': `${duration}s` }}
       aria-hidden="true"
     >
-      <div 
-        className={`marquee-track ${isDragging ? 'dragging' : ''}`}
-        ref={trackRef}
-        onMouseDown={handleMouseDown}
-        onMouseLeave={handleMouseLeave}
-        onMouseUp={handleMouseUp}
-        onMouseMove={handleMouseMove}
-      >
+      <div className="marquee-track">
         {marqueeItems.map((entity, index) => {
           const Tag = entity.source_url ? 'a' : 'span';
           return (

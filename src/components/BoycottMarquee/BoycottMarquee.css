@@ -15,8 +15,10 @@
   border-top: 1px solid var(--color-border);
 }
 
-/* Sürükleme esnasında blur katmanlarının tıklamayı engellememesi gerekir, 
-   zaten pointer-events: none var. */
+/* Fare üzerine geldiğinde kaymayı durdur */
+.marquee-sidebar:hover .marquee-track {
+  animation-play-state: paused;
+}
 
 /* Sol ve sağ kenarlar vinyet blur efekti */
 .marquee-sidebar::before,
@@ -49,26 +51,8 @@
   flex-direction: row;
   align-items: center;
   height: 100%;
+  animation: marqueeHorizontalScroll var(--marquee-duration, 30s) linear infinite;
   white-space: nowrap;
-  
-  /* Sürükleme ve Kaydırma Ayarları */
-  overflow-x: auto;
-  scroll-behavior: auto;
-  cursor: grab;
-  scrollbar-width: none; /* Firefox için kaydırma çubuğunu gizle */
-}
-
-/* Chrome/Safari/Edge için kaydırma çubuğunu gizle */
-.marquee-track::-webkit-scrollbar {
-  display: none;
-}
-
-.marquee-track.dragging {
-  cursor: grabbing;
-  user-select: none; /* Sürüklerken metin seçimini engelle */
-}
-.marquee-track.dragging .marquee-item {
-  pointer-events: none; /* Sürüklerken linklere yanlışlıkla tıklanmasını engelle */
 }
 
 .marquee-item {
@@ -92,7 +76,14 @@
   text-decoration: underline;
 }
 
-/* CSS animasyonu JS Auto-Scroll ile değiştirildiği için kaldırıldı */
+@keyframes marqueeHorizontalScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
 
 /* Küçük ekranlarda da görünür kalsın (Yatay olduğu için yer kaplamaz) */
 @media (max-width: 1024px) {
