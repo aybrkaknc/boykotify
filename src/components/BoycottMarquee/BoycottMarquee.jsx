@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef, useState, useEffect } from 'react';
 import './BoycottMarquee.css';
 
 /**
@@ -32,15 +32,55 @@ const BoycottMarquee = ({ entities }) => {
     return Math.max(5, displayCount * 0.4);
   }, [marqueeItems]);
 
+  const trackRef = useRef(null);
+  const [isHovering, setIsHovering] = useState(false);
+
+  // JS tabanlı otomatik kaydırma (Auto-scroll) - Hover yokken çalışır
+  useEffect(() => {
+    if (isHovering || marqueeItems.length === 0) return;
+    
+    const interval = setInterval(() => {
+      if (trackRef.current) {
+        trackRef.current.scrollLeft += 1;
+      }
+    }, 25);
+
+    return () => clearInterval(interval);
+  }, [isHovering, marqueeItems.length]);
+
+  // Fare tekerleği ile yatay kaydırma (Sayfanın dikey kaymasını engellemek için native listener kullanıyoruz)
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    const handleWheel = (e) => {
+      e.preventDefault(); // Sayfanın aşağı-yukarı kaymasını engelle
+      
+      // Daha akıcı (smooth) bir kaydırma deneyimi için native API kullanıyoruz
+      track.scrollBy({
+        left: (e.deltaY + e.deltaX) * 1.5, // Hızı ve mesafeyi biraz artırıyoruz
+        behavior: 'smooth'
+      });
+    };
+
+    track.addEventListener('wheel', handleWheel, { passive: false });
+    return () => track.removeEventListener('wheel', handleWheel);
+  }, [marqueeItems.length]); // Veriler yüklenip ref oluştuktan sonra çalışması için bağımlılık eklendi
+
   if (marqueeItems.length === 0) return null;
 
   return (
     <aside
-      className="marquee-sidebar"
+      className="marquee-sidebar iso-dial-mode"
       style={{ '--marquee-duration': `${duration}s` }}
       aria-hidden="true"
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
     >
-      <div className="marquee-track">
+      <div 
+        className="marquee-track"
+        ref={trackRef}
+      >
         {marqueeItems.map((entity, index) => {
           const Tag = entity.source_url ? 'a' : 'span';
           return (

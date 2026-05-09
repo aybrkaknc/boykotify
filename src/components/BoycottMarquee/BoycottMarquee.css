@@ -7,18 +7,16 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 40px;
+  height: 50px; /* Kadran tasarımı için biraz daha yüksek */
   overflow: hidden;
   z-index: 100;
-  background-color: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(4px);
+  background-color: rgba(15, 15, 15, 0.9); /* Daha koyu mat siyah */
+  backdrop-filter: blur(8px);
   border-top: 1px solid var(--color-border);
 }
 
-/* Fare üzerine geldiğinde kaymayı durdur */
-.marquee-sidebar:hover .marquee-track {
-  animation-play-state: paused;
-}
+/* Sürükleme esnasında blur katmanlarının tıklamayı engellememesi gerekir, 
+   zaten pointer-events: none var. */
 
 /* Sol ve sağ kenarlar vinyet blur efekti */
 .marquee-sidebar::before,
@@ -49,22 +47,51 @@
 .marquee-track {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-end; /* Yazılar alta, çizgiler üste (veya tam tersi) */
   height: 100%;
-  animation: marqueeHorizontalScroll var(--marquee-duration, 30s) linear infinite;
+  padding-bottom: 8px; /* Alt kısımdan boşluk */
   white-space: nowrap;
+  
+  /* Sürükleme ve Kaydırma Ayarları */
+  overflow-x: auto;
+  scroll-behavior: auto;
+  cursor: grab;
+  scrollbar-width: none; /* Firefox için kaydırma çubuğunu gizle */
+}
+
+/* Chrome/Safari/Edge için kaydırma çubuğunu gizle */
+.marquee-track::-webkit-scrollbar {
+  display: none;
 }
 
 .marquee-item {
-  padding: 0 30px;
-  font-size: 0.85rem;
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 1px;
-  color: #ffffff;
-  opacity: 0.7;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 20px;
+  height: 100%;
+  font-family: 'Courier New', Courier, monospace; /* Kadran mekanik fontu */
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #a0a0a0; /* Varsayılan gri ton */
   text-transform: uppercase;
   text-decoration: none;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+/* ISO Kadran Çizgisi (Tick Mark) */
+.marquee-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1px;
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .marquee-item.clickable {
@@ -72,18 +99,10 @@
 }
 
 .marquee-item.clickable:hover {
-  opacity: 1;
-  text-decoration: underline;
+  color: #ffffff; /* Üzerine gelince parlasın */
 }
 
-@keyframes marqueeHorizontalScroll {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
+/* CSS animasyonu JS Auto-Scroll ile değiştirildiği için kaldırıldı */
 
 /* Küçük ekranlarda da görünür kalsın (Yatay olduğu için yer kaplamaz) */
 @media (max-width: 1024px) {
