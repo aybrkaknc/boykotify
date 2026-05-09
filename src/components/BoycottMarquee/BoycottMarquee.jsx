@@ -33,11 +33,14 @@ const BoycottMarquee = ({ entities }) => {
   }, [marqueeItems]);
 
   const trackRef = useRef(null);
-  const [isHovering, setIsHovering] = useState(false);
+  const closeTimeoutRef = useRef(null);
+  const [isHoveringTrack, setIsHoveringTrack] = useState(false);
+  const [activeEntity, setActiveEntity] = useState(null);
+  const [popupPos, setPopupPos] = useState(0);
 
-  // JS tabanlı otomatik kaydırma (Auto-scroll) - Hover yokken çalışır
+  // JS tabanlı otomatik kaydırma (Auto-scroll) - Hover veya Popup yokken çalışır
   useEffect(() => {
-    if (isHovering || marqueeItems.length === 0) return;
+    if (isHoveringTrack || activeEntity || marqueeItems.length === 0) return;
     
     const interval = setInterval(() => {
       if (trackRef.current) {
@@ -46,19 +49,19 @@ const BoycottMarquee = ({ entities }) => {
     }, 25);
 
     return () => clearInterval(interval);
-  }, [isHovering, marqueeItems.length]);
+  }, [isHoveringTrack, activeEntity, marqueeItems.length]);
 
-  // Fare tekerleği ile yatay kaydırma (Sayfanın dikey kaymasını engellemek için native listener kullanıyoruz)
+  // Fare tekerleği ile yatay kaydırma
   useEffect(() => {
     const track = trackRef.current;
     if (!track) return;
 
     const handleWheel = (e) => {
-      e.preventDefault(); // Sayfanın aşağı-yukarı kaymasını engelle
+      e.preventDefault(); 
+      setActiveEntity(null); // Kaydırma yapınca popup'ı gizle
       
-      // Daha akıcı (smooth) bir kaydırma deneyimi için native API kullanıyoruz
       track.scrollBy({
-        left: (e.deltaY + e.deltaX) * 1.5, // Hızı ve mesafeyi biraz artırıyoruz
+        left: (e.deltaY + e.deltaX) * 1.5,
         behavior: 'smooth'
       });
     };
@@ -69,34 +72,94 @@ const BoycottMarquee = ({ entities }) => {
 
   if (marqueeItems.length === 0) return null;
 
+  const handleItemMouseEnter = (e, entity) => {
+    // Mobilde (768px altı) popup gösterme
+    if (window.innerWidth <= 768) return;
+
+    if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+    const rect = e.currentTarget.getBoundingClientRect();
+    setPopupPos(rect.left + rect.width / 2);
+    setActiveEntity(entity);
+  };
+
+  const handleItemMouseLeave = () => {
+    closeTimeoutRef.current = setTimeout(() => {
+      setActiveEntity(null);
+    }, 300); // Popup'a giderken kapanmaması için 300ms tölerans süresi
+  };
+
+  const handlePopupMouseEnter = () => {
+    if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+  };
+
+  const handlePopupMouseLeave = () => {
+    closeTimeoutRef.current = setTimeout(() => {
+      setActiveEntity(null);
+    }, 300);
+  };
+
   return (
-    <aside
-      className="marquee-sidebar iso-dial-mode"
-      style={{ '--marquee-duration': `${duration}s` }}
-      aria-hidden="true"
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
-    >
-      <div 
-        className="marquee-track"
-        ref={trackRef}
-      >
-        {marqueeItems.map((entity, index) => {
-          const Tag = entity.source_url ? 'a' : 'span';
-          return (
-            <Tag
-              key={`${entity.name}-${index}`}
-              className={`marquee-item ${entity.status} ${entity.source_url ? 'clickable' : ''}`}
-              href={entity.source_url || undefined}
-              target={entity.source_url ? '_blank' : undefined}
-              rel={entity.source_url ? 'noopener noreferrer' : undefined}
+    <>
+      {/* Global Popup (Taşmaları önlemek için aside dışında) */}
+      {activeEntity && (
+        <div 
+          className="marquee-global-popup" 
+          style={{ left: popupPos }}
+          onMouseEnter={handlePopupMouseEnter}
+          onMouseLeave={handlePopupMouseLeave}
+        >
+          <div className="marquee-popup-header">
+            <span className={`marquee-popup-status marquee-popup-status--${activeEntity.status}`}>
+              {activeEntity.status === 'boycott' ? 'BOYKOT' : 'VATANSEVER'}
+            </span>
+            <span className="marquee-popup-entity">{activeEntity.name}</span>
+          </div>
+          {activeEntity.reason && (
+            <p className="marquee-popup-reason">{activeEntity.reason}</p>
+          )}
+          {activeEntity.source_url && (
+            <a 
+              className="marquee-popup-source"
+              href={activeEntity.source_url}
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              {entity.name}
-            </Tag>
-          );
-        })}
-      </div>
-    </aside>
+              Kaynak için tıkla →
+            </a>
+          )}
+        </div>
+      )}
+
+      <aside
+        className="marquee-sidebar iso-dial-mode"
+        style={{ '--marquee-duration': `${duration}s` }}
+        aria-hidden="true"
+        onMouseEnter={() => setIsHoveringTrack(true)}
+        onMouseLeave={() => setIsHoveringTrack(false)}
+      >
+        <div 
+          className="marquee-track"
+          ref={trackRef}
+        >
+          {marqueeItems.map((entity, index) => {
+            const Tag = entity.source_url ? 'a' : 'span';
+            return (
+              <Tag
+                key={`${entity.name}-${index}`}
+                className={`marquee-item ${entity.status} ${entity.source_url ? 'clickable' : ''}`}
+                href={entity.source_url || undefined}
+                target={entity.source_url ? '_blank' : undefined}
+                rel={entity.source_url ? 'noopener noreferrer' : undefined}
+                onMouseEnter={(e) => handleItemMouseEnter(e, entity)}
+                onMouseLeave={handleItemMouseLeave}
+              >
+                {entity.name}
+              </Tag>
+            );
+          })}
+        </div>
+      </aside>
+    </>
   );
 };
 
