@@ -49,7 +49,7 @@
   font-size: var(--font-size-hero);
   line-height: 1.1;
   letter-spacing: 2px;
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
   text-transform: uppercase;
 }
 
@@ -246,37 +246,131 @@
 }
 
 /* Yükleme Animasyonu */
+/* Gelişmiş Yükleme Ekranı (Madde 3) */
 .app__loading {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-lg);
-  padding: var(--spacing-3xl);
+  justify-content: center;
+  overflow: hidden;
+  background-color: var(--color-bg);
 }
 
-.app__loading-pulse {
-  width: 48px;
-  height: 48px;
+.app__loading-collage {
+  position: absolute;
+  inset: -5%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 15px;
+  opacity: 0.3;
+  filter: blur(2px) brightness(0.5);
+  transform: rotate(-3deg) scale(1.05);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.app__collage-item {
+  aspect-ratio: 1;
+  background-color: #1a1a1a;
+  border-radius: var(--radius-md);
+  background-size: cover;
+  background-position: center;
+  box-shadow: inset 0 0 40px rgba(0,0,0,0.5);
+  opacity: 0;
+  animation: fadeIn 1s forwards;
+}
+
+.app__loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, transparent 20%, rgba(0,0,0,0.8) 70%, var(--color-bg) 100%);
+  z-index: 2;
+}
+
+.app__radar-container {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.app__radar-circle {
+  position: absolute;
+  border: 2px solid var(--color-primary);
   border-radius: 50%;
-  background-color: var(--color-primary);
-  animation: pulse 1.2s ease-in-out infinite;
+  opacity: 0;
+  animation: radarPulse 4s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+  box-shadow: 0 0 15px var(--color-primary-muted);
 }
 
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(0.8);
-    opacity: 0.5;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 1;
-  }
+.app__radar-circle:nth-child(1) { border-color: var(--color-primary); box-shadow: 0 0 15px var(--color-primary-muted); animation-delay: 0s; }
+.app__radar-circle:nth-child(2) { border-color: #fff; box-shadow: 0 0 15px rgba(255, 255, 255, 0.4); animation-delay: 1s; }
+.app__radar-circle:nth-child(3) { border-color: var(--color-primary); box-shadow: 0 0 15px var(--color-primary-muted); animation-delay: 2s; }
+.app__radar-circle:nth-child(4) { border-color: #fff; box-shadow: 0 0 15px rgba(255, 255, 255, 0.4); animation-delay: 3s; }
+
+@keyframes radarPulse {
+  0% { width: 0; height: 0; opacity: 1; }
+  100% { width: 450px; height: 450px; opacity: 0; }
+}
+
+.app__radar-core {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  background-color: var(--color-bg);
+  border: 3px solid var(--color-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  box-shadow: 0 0 40px var(--color-primary);
+  z-index: 15;
+}
+
+.app__loading-text-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90vw; /* Ekran genişliğine göre esneklik sağla */
+  text-align: center;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
 }
 
 .app__loading-text {
-  font-size: var(--font-size-base);
+  font-family: var(--font-heading);
+  font-size: 3.5rem;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: var(--spacing-sm);
+  animation: textGlitch 2s ease-in-out infinite;
+  text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.4);
+  line-height: 1;
+}
+
+@keyframes textGlitch {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(0.98); }
+}
+
+.app__loading-subtext {
+  font-size: 1.1rem;
   color: var(--color-text-secondary);
-  font-weight: var(--font-weight-medium);
+  letter-spacing: 1px;
+  opacity: 0.8;
 }
 
 /* Footer */
@@ -336,6 +430,12 @@
 .app__results-content {
   flex: 1;
   min-width: 0; /* Taşmayı engelle */
+}
+
+/* Animasyonlar */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* Masaüstünde mobil scoreboard'u gizle */
@@ -431,12 +531,17 @@
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   box-shadow: 0 0 20px rgba(29, 185, 84, 0.15);
-  margin-top: var(--spacing-xl);
+  margin-top: var(--spacing-3xl);
   animation: heroButtonZoomIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 @keyframes heroButtonZoomIn {
-  from { opacity: 0; transform: scale(0.8) translateY(10px); }
+  from { opacity: 0; transform: scale(0.9) translateY(10px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
@@ -460,5 +565,33 @@
     font-size: 1rem;
     width: 100%;
     max-width: 300px;
+  }
+}
+.app__manual-input-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.app__picker-back-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-md);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.app__picker-back-btn:hover {
+  color: var(--color-text);
+}
+
+@media (max-width: 640px) {
+  .app__picker-back-btn {
+    margin-top: var(--spacing-lg);
+    font-size: var(--font-size-base);
   }
 }

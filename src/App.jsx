@@ -6,10 +6,13 @@
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Header from './components/Header/Header';
+import AudioController from './components/AudioController/AudioController';
 import PlaylistInput from './components/PlaylistInput/PlaylistInput';
 import ScoreCard from './components/ScoreCard/ScoreCard';
 import TrackList from './components/TrackList/TrackList';
 import BoycottMarquee from './components/BoycottMarquee/BoycottMarquee';
+import PlaylistPicker from './components/PlaylistPicker/PlaylistPicker';
+import ScrollToTop from './components/ScrollToTop/ScrollToTop';
 import {
   loginWithSpotify,
   exchangeCodeForToken,
@@ -18,18 +21,68 @@ import {
   fetchPlaylistTracks,
   removeTracksFromPlaylist,
   fetchUserProfile,
-  extractPlaylistId
+  extractPlaylistId,
+  fetchPlaylistMetadata,
+  checkPlaylistAccessibility,
+  fetchUserPlaylists
 } from './services/spotify';
 import {
   fetchAllEntities,
   matchTracksWithEntities,
   calculatePatriotScore
 } from './services/boycott';
+import BackgroundMusic from './components/BackgroundMusic/BackgroundMusic';
 import './App.css';
+
+const LOADING_MESSAGES = [
+  "Terör Seviciler Ayıklanıyor...",
+  "Kandil Senfonisi Susturuluyor...",
+  "Milli Bilinç Sorgulanıyor...",
+  "Hainlerin İzleri Sürülüyor...",
+  "Gayrimilli Unsurlar Taranıyor...",
+  "Kandil'in Sesi Kısılıyor...",
+  "Fistanlı Notalar Ayıklanıyor...",
+  "Pensilvanya Kayıtları Siliniyor...",
+  "Foncu 'Sanatçılar' Radara Yakalandı...",
+  "Mağara Melodileri Temizleniyor...",
+  "Milli Menfaatler Gözetiliyor...",
+  "İhanet Şebekesi Deşifre Ediliyor...",
+  "Kripto Notalar Ayıklanıyor...",
+  "Dış Mihrakların İzleri Siliniyor...",
+  "Sözde Aydınların Ses Kayıtları Taranıyor...",
+  "Milli Refleks Devrede...",
+  "Hainlerin Playlisti Sorgulanıyor...",
+  "Baronların Çarkına Çomak Sokuluyor...",
+  "Güdümlü Şarkılar Tespit Ediliyor...",
+  "Vatan Toprağı (Playlist) Arındırılıyor...",
+  "Milli Çizgiden Sapanlar Listeleniyor...",
+  "Sınır Ötesi Tarama Başlatıldı...",
+  "Terör Finansörlerinin Maskesi Düşürülüyor...",
+  "Hainlere Geçit Yok...",
+  "Operasyon Başladı: Playlist Temizliği...",
+  "Milli İradenin Sesi Yükseliyor...",
+  "Kandil'e Nota Veriliyor...",
+  "Yetmez Ama Evet Diyen Foncular Taranıyor...",
+  "Liberal Maskeli İhanet Şebekesi Ayıklanıyor...",
+  "Referandum İşbirlikçileri Radara Yakalandı...",
+  "Türkçe Olimpiyatları Kayıtları Siliniyor...",
+  "Maklube Kokulu Şarkılar Temizleniyor...",
+  "Himmet Melodileri Engelleniyor...",
+  "Okyanus Ötesinden Gelen Notalar İptal...",
+  "Hizmet Maskeli Hainler Deşifre Ediliyor...",
+  "Pensilvanya'nın Sesi Kesiliyor...",
+  "Kripto FETÖ'cü Şarkıcılar Ayıklanıyor...",
+  "Sözde Özgürlükçü Notalar Ayıklanıyor...",
+  "Bölücü Sloganlar Playlist'ten Atılıyor...",
+  "Kadın Hakları Maskesi Altındaki Hainler Taranıyor...",
+  "Etnik Fitne Melodileri Deşifre Ediliyor..."
+];
 
 export default function App() {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
+  const [scanningCovers, setScanningCovers] = useState([]);
   const [matchedTracks, setMatchedTracks] = useState([]);
   const [stats, setStats] = useState(null);
   const [currentPlaylistId, setCurrentPlaylistId] = useState(null);
@@ -43,7 +96,50 @@ export default function App() {
   const [modalType, setModalType] = useState('error'); // 'error' veya 'success'
   const [isCopied, setIsCopied] = useState(false);
   const [allEntities, setAllEntities] = useState([]);
+  // Müzik Durumu
+  const [isMusicPlaying, setIsMusicPlaying] = useState(() => {
+    const saved = localStorage.getItem('music_playing');
+    return saved !== null ? saved === 'true' : true;
+  });
+  const [musicVolume, setMusicVolume] = useState(() => {
+    const saved = localStorage.getItem('music_volume');
+    return saved !== null ? parseInt(saved, 10) : 15;
+  });
+  const [musicRestartTrigger, setMusicRestartTrigger] = useState(0);
+
+  // Müzik durumunu kaydet
+  useEffect(() => {
+    localStorage.setItem('music_playing', isMusicPlaying.toString());
+  }, [isMusicPlaying]);
+
+  // Ses seviyesini kaydet
+  useEffect(() => {
+    localStorage.setItem('music_volume', musicVolume.toString());
+  }, [musicVolume]);
+
+  const handleRestartMusic = () => {
+    setMusicRestartTrigger(prev => prev + 1);
+  };
+
   const [activeFilter, setActiveFilter] = useState('all');
+  const [userPlaylists, setUserPlaylists] = useState([]);
+  const [showManualInput, setShowManualInput] = useState(false);
+  const [isHeaderScrolled, setIsHeaderScrolled] = useState(false);
+
+  // Scroll takibi
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollThreshold = 100;
+      if (window.scrollY > scrollThreshold) {
+        if (!isHeaderScrolled) setIsHeaderScrolled(true);
+      } else {
+        if (isHeaderScrolled) setIsHeaderScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isHeaderScrolled]);
 
   /**
    * Sayfa yüklendiğinde OAuth callback'ini, mevcut oturumu ve veritabanını kontrol eder.
@@ -190,8 +286,12 @@ export default function App() {
     try {
       const profile = await fetchUserProfile();
       setUser(profile);
+      
+      /* Profil yüklendikten sonra playlistleri de çek */
+      const playlists = await fetchUserPlaylists();
+      setUserPlaylists(playlists);
     } catch (err) {
-      console.error('Profil yüklenemedi:', err);
+      console.error('Profil veya playlistler yüklenemedi:', err);
       logoutSpotify();
     }
   }
@@ -224,33 +324,61 @@ export default function App() {
    * 
    * @param {string} playlistId - Taranacak playlist ID'si.
    */
-  const handleScanPlaylist = useCallback(async (playlistId) => {
-    setIsLoading(true);
+  const handleScanPlaylist = useCallback(async (playlistUrlOrId) => {
+    /* 1. Reset State */
     setError('');
     setErrorSolution('');
     setErrorDetails('');
     setModalType('error');
     setShowErrorDetails(false);
-    setMatchedTracks([]);
-    setStats(null);
-    setActiveFilter('all');
 
     try {
-      /* Paralel olarak şarkıları ve boykot verilerini çek */
+      /* 2. ÖN DOĞRULAMA (Pre-check) 
+         Eğer gelen bir URL ise önce kontrol et, değilse (refresh durumu) ID olarak kabul et.
+      */
+      let playlistId = playlistUrlOrId;
+      if (playlistUrlOrId.includes('spotify.com') || playlistUrlOrId.includes('spotify:')) {
+        const playlistData = await checkPlaylistAccessibility(playlistUrlOrId);
+        playlistId = playlistData.id;
+      }
+
+      /* 3. DOĞRULAMA BAŞARILI: Yükleme Ekranına Geç */
+      setIsLoading(true);
+      setMatchedTracks([]);
+      setStats(null);
+      setActiveFilter('all');
+      setScanningCovers([]);
+      setLoadingMessageIndex(Math.floor(Math.random() * LOADING_MESSAGES.length));
+
+      const messageInterval = setInterval(() => {
+        setLoadingMessageIndex(prev => {
+          let next;
+          do {
+            next = Math.floor(Math.random() * LOADING_MESSAGES.length);
+          } while (next === prev && LOADING_MESSAGES.length > 1);
+          return next;
+        });
+      }, 2500);
+
+      /* 4. Tarama Operasyonu */
+      const covers = await fetchPlaylistMetadata(playlistId);
+      setScanningCovers(covers);
+      
+      await new Promise(resolve => setTimeout(resolve, 8000));
+
       const [{ tracks, info: playlistInfo }, entities] = await Promise.all([
         fetchPlaylistTracks(playlistId),
         fetchAllEntities()
       ]);
 
-      /* Şarkıları boykot veritabanıyla eşleştir */
+      clearInterval(messageInterval);
+
       const matched = matchTracksWithEntities(tracks, entities);
       const score = calculatePatriotScore(matched);
       score.playlistInfo = playlistInfo;
       
-      /* Marquee'nin güncel verilerle beslenmesi için state'i güncelle */
       setAllEntities(entities);
 
-      /* Boykotlu şarkıları liste başına gelecek şekilde sırala */
       const sortedMatched = matched.sort((a, b) => {
         if (a.status === 'boycott' && b.status !== 'boycott') return -1;
         if (b.status === 'boycott' && a.status !== 'boycott') return 1;
@@ -261,11 +389,23 @@ export default function App() {
       setStats(score);
       setCurrentPlaylistId(playlistId);
     } catch (err) {
-      console.error('Tarama hatası:', err);
+      console.error('Tarama/Doğrulama hatası:', err);
+      setIsLoading(false);
       setModalType('error');
-      setError('Playlist bulunamadı veya taranırken bir sorun oluştu.');
-      setErrorSolution('Girdiğiniz Spotify linkinin doğru olduğundan ve playlistin gizli (private) olmadığından emin olun.');
-      setErrorDetails(err.stack || err.message || JSON.stringify(err));
+      setError(err.message || 'Playlist bulunamadı veya taranırken bir sorun oluştu.');
+      
+      /* Hata tipine göre akıllı çözüm önerisi */
+      if (err.message.includes('ALBÜM') || err.message.includes('SANATÇI') || err.message.includes('ŞARKI')) {
+        setErrorSolution('Spotify uygulamasında çalma listesinin üzerindeki üç noktaya tıklayın, "Paylaş" menüsünden "Link kopyala" seçeneğini kullanın.');
+      } else if (err.message.includes('Gizli')) {
+        setErrorSolution('Spotify uygulamasında çalma listesi ayarlarına girin ve "Herkese Açık Yap" (Make Public) seçeneğini işaretleyin.');
+      } else if (err.message.includes('bulunamadı')) {
+        setErrorSolution('Linkin sonundaki ekstra karakterleri silmiş olabilirsiniz. Linki Spotify üzerinden tekrar kopyalayıp yapıştırmayı deneyin.');
+      } else {
+        setErrorSolution('Yardım ( ? ) menüsündeki link gereksinimlerini kontrol edin.');
+      }
+      
+      setErrorDetails(err.stack || err.message);
     } finally {
       setIsLoading(false);
     }
@@ -311,15 +451,37 @@ export default function App() {
 
   return (
     <div className="app" id="app-root">
+      <BackgroundMusic 
+        isPlaying={isMusicPlaying} 
+        volume={musicVolume} 
+        restartTrigger={musicRestartTrigger}
+      />
       {/* Sol Kenar — Sonsuz Kayan Sanatçı Listesi */}
       <BoycottMarquee entities={allEntities} />
 
-      <Header user={user} onLogin={handleLogin} onLogout={handleLogout} />
+      <Header 
+        user={user} 
+        onLogin={handleLogin} 
+        onLogout={handleLogout} 
+        isMusicPlaying={isMusicPlaying}
+        onToggleMusic={() => setIsMusicPlaying(!isMusicPlaying)}
+        musicVolume={musicVolume}
+        onVolumeChange={setMusicVolume}
+        isScrolled={user && isHeaderScrolled}
+      />
+
+      <AudioController 
+        isMusicPlaying={isMusicPlaying}
+        onToggleMusic={() => setIsMusicPlaying(!isMusicPlaying)}
+        musicVolume={musicVolume}
+        onVolumeChange={setMusicVolume}
+        onRestartMusic={handleRestartMusic}
+      />
 
       <main className="app__main">
         {/* Karşılama Bölümü */}
         {!hasResults && !isLoading && (
-          <section className="app__hero" id="hero-section">
+          <section className="app__hero animate-fade-in" id="hero-section">
             <div className="app__hero-content">
               <h2 className="app__hero-title">
                 Müziğinde <a 
@@ -329,9 +491,10 @@ export default function App() {
                   className="app__hero-accent app__hero-link"
                 >İhanete</a> Yer Verme!
               </h2>
-              {!user ? (
+              
+              {!user && (
                 <button
-                  className="app__hero-login-btn"
+                  className="app__hero-login-btn btn-sonar"
                   onClick={handleLogin}
                   id="hero-login-button"
                 >
@@ -340,10 +503,28 @@ export default function App() {
                   </svg>
                   Spotify ile Giriş Yap
                 </button>
-              ) : (
-                <PlaylistInput onSubmit={handleScanPlaylist} isLoading={isLoading} />
+              )}
+
+              {user && showManualInput && (
+                <div className="app__manual-input-wrapper">
+                  <PlaylistInput onSubmit={handleScanPlaylist} isLoading={isLoading} />
+                  <button 
+                    className="app__picker-back-btn" 
+                    onClick={() => setShowManualInput(false)}
+                  >
+                    ← Listelerime Geri Dön
+                  </button>
+                </div>
               )}
             </div>
+
+            {user && !showManualInput && (
+              <PlaylistPicker 
+                playlists={userPlaylists} 
+                onSelect={handleScanPlaylist}
+                onManualInput={() => setShowManualInput(true)}
+              />
+            )}
           </section>
         )}
           {/* Modal Overlay (Hata veya Başarı) */}
@@ -413,17 +594,40 @@ export default function App() {
           </div>
         )}
 
-        {/* Yükleme Animasyonu */}
+        {/* Gelişmiş Yükleme Ekranı (Madde 3) */}
         {isLoading && (
-          <div className="app__loading" id="loading-indicator">
-            <div className="app__loading-pulse" />
-            <p className="app__loading-text">Playlist taranıyor...</p>
+          <div className="app__loading animate-fade-in" id="loading-indicator">
+            <div className="app__loading-collage">
+              {/* Gerçek kapak fotoğraflarını kullanarak kolaj oluştur */}
+              {(scanningCovers.length > 0 ? [...Array(100)].map((_, i) => scanningCovers[i % scanningCovers.length]) : []).map((url, i) => (
+                <div 
+                  key={i} 
+                  className="app__collage-item"
+                  style={{ 
+                    backgroundImage: `url(${url})`,
+                    animationDelay: `${Math.random() * 2}s`
+                  }}
+                />
+              ))}
+            </div>
+            <div className="app__loading-overlay" />
+            
+            <div className="app__radar-container">
+              <div className="app__radar-circle"></div>
+              <div className="app__radar-circle"></div>
+              <div className="app__radar-circle"></div>
+              <div className="app__radar-circle"></div>
+              
+              <div className="app__loading-text-wrapper">
+                <h3 className="app__loading-text">{LOADING_MESSAGES[loadingMessageIndex]}</h3>
+              </div>
+            </div>
           </div>
         )}
 
         {/* Sonuçlar */}
         {hasResults && (
-          <>
+          <div className="animate-fade-in">
             <div className="app__results-layout">
               <aside className="app__results-sidebar">
                 <button
@@ -472,26 +676,13 @@ export default function App() {
                 onFilterChange={setActiveFilter}
               />
             </div>
-          </>
+          </div>
         )}
       </main>
 
       <footer className="app__footer">
-        <p>
-          Ne Mutlu Türk'üm Diyene!
-          <img 
-            src="https://flagcdn.com/w160/tr.png" 
-            alt="Türk Bayrağı" 
-            style={{ 
-              height: '14px', 
-              verticalAlign: 'middle', 
-              marginLeft: '8px',
-              borderRadius: '1px',
-              boxShadow: '0 0 2px rgba(0,0,0,0.5)'
-            }} 
-          />
-        </p>
       </footer>
+      <ScrollToTop show={isHeaderScrolled} />
     </div>
   );
 }

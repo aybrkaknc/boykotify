@@ -78,7 +78,7 @@ export default function TrackList({ tracks, activeFilter = 'all', canRemove, onR
             disabled={isRemoving}
             id="remove-boycotted-button"
           >
-            {isRemoving ? 'Siliniyor...' : `Boykotluları Temizle (${boycottedTracks.length})`}
+            {isRemoving ? 'Temizleniyor...' : `Hepsine Has*ktir! (${boycottedTracks.length})`}
           </button>
         )}
       </div>

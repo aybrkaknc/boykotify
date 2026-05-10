@@ -1,0 +1,468 @@
+/* ================================================
+   PlaylistPicker Bileşeni Stilleri
+   ================================================ */
+
+.playlist-picker {
+  width: 100%;
+  max-width: 1200px;
+  margin: var(--spacing-3xl) auto 0;
+  padding-bottom: var(--spacing-3xl);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.playlist-picker.is-collapsed {
+  padding-bottom: 0;
+  margin-bottom: var(--spacing-xl);
+}
+
+.playlist-picker__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+  padding: 0 var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: var(--spacing-sm);
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  transition: all 0.3s ease;
+}
+
+.playlist-picker.is-collapsed .playlist-picker__header {
+  margin-bottom: 0;
+  border-bottom-color: transparent;
+}
+
+.playlist-picker__header-left {
+  display: flex;
+  align-items: center; /* Merkeze hizala */
+  gap: var(--spacing-sm);
+}
+
+.playlist-picker__collapse-btn {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--color-text-muted);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-right: -4px;
+}
+
+.playlist-picker__collapse-btn:focus {
+  outline: none;
+}
+
+.playlist-picker__collapse-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.playlist-picker__collapse-btn.collapsed {
+  transform: rotate(-90deg);
+}
+
+.playlist-picker__collapse-btn:hover {
+  color: var(--color-primary);
+  background-color: rgba(227, 10, 23, 0.05);
+  border-radius: 50%;
+}
+
+.playlist-picker__title {
+  font-family: var(--font-heading);
+  font-size: 1.6rem;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0;
+  line-height: 1; /* Dikey hizalama için eklendi */
+  white-space: nowrap;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.playlist-picker__title:hover {
+  color: var(--color-primary);
+  text-shadow: 0 0 15px rgba(227, 10, 23, 0.4);
+}
+
+.playlist-picker__manual-link {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s ease;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+  opacity: 0.7;
+  align-self: center; /* Dikeyde merkeze zorla */
+  line-height: 1;
+}
+
+.playlist-picker__manual-link:hover {
+  opacity: 1;
+  color: var(--color-primary);
+}
+
+.playlist-picker__view-controls {
+  display: flex;
+  gap: 2px;
+  background-color: rgba(255, 255, 255, 0.03);
+  padding: 2px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  height: 38px;
+  align-items: stretch;
+  position: relative; /* Gösterge için */
+  overflow: hidden;
+}
+
+.playlist-picker__view-indicator {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: 2px;
+  width: 42px;
+  background-color: var(--color-primary);
+  border-radius: calc(var(--radius-sm) - 2px);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+}
+
+.playlist-picker__view-indicator--compact {
+  transform: translateX(44px); /* width(42) + gap(2) */
+}
+
+.playlist-picker__view-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  width: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: calc(var(--radius-sm) - 2px);
+  transition: all 0.2s ease;
+  outline: none !important; /* Outline tamamen kaldırıldı */
+  position: relative;
+  z-index: 2; /* Göstergenin üstünde kalmalı */
+}
+
+.playlist-picker__view-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.playlist-picker__view-btn.active {
+  color: #fff;
+}
+
+.playlist-picker__view-btn:hover:not(.active) {
+  color: var(--color-text);
+  background-color: rgba(255,255,255,0.05);
+}
+
+/* Animasyonlu İçerik Sarmalayıcı */
+.playlist-picker__content-wrapper {
+  max-height: 2000px; /* Tahmini maksimum yükseklik */
+  opacity: 1;
+  overflow: hidden;
+  transition: 
+    max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.4s ease,
+    transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: top;
+}
+
+.playlist-picker__content-wrapper.collapsed {
+  max-height: 0;
+  opacity: 0;
+  transform: scaleY(0.95) translateY(-20px);
+  pointer-events: none;
+}
+
+/* Yan Elemanların Gizlenmesi */
+.playlist-picker__manual-link,
+.playlist-picker__view-controls {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.playlist-picker__manual-link.hidden,
+.playlist-picker__view-controls.hidden {
+  opacity: 0;
+  transform: translateX(10px);
+  pointer-events: none;
+}
+
+/* Grid Yapısı - TrackList ile benzer */
+/* Grid/Compact Mod Ayarları */
+.playlist-picker__grid--grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--spacing-md);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.playlist-picker__grid--compact {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0; /* Çizgilerin birleşmesi için gap 0 */
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.playlist-picker__card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  transition: 
+    transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    background-color 0.3s ease,
+    flex-direction 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  animation: layout-transition 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes layout-transition {
+  from { opacity: 0.8; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.playlist-picker__card--grid {
+  flex-direction: column;
+}
+
+.playlist-picker__card--compact {
+  flex-direction: row;
+  align-items: center;
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-right: 1px solid rgba(255, 255, 255, 0.05); /* Dikey çizgiler */
+  border-radius: 0;
+  padding: 8px 12px;
+  min-height: 40px;
+  animation: layout-transition-list 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Her satırın sonundaki dikey çizgiyi kaldır */
+.playlist-picker__card--compact:nth-child(4n) {
+  border-right: none;
+}
+
+@keyframes layout-transition-list {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.playlist-picker__card:hover {
+  transform: translateY(-8px);
+  border-color: var(--color-primary);
+  box-shadow: 0 10px 30px rgba(227, 10, 23, 0.2);
+}
+
+.playlist-picker__card--compact:hover {
+  transform: translateX(5px);
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.playlist-picker__image-container {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background-color: #121212;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.playlist-picker__card--grid .playlist-picker__image-container {
+  width: 100%;
+}
+
+.playlist-picker__card--compact .playlist-picker__image-container {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+}
+
+.playlist-picker__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.playlist-picker__card:hover .playlist-picker__image {
+  transform: scale(1.1);
+}
+
+.playlist-picker__info {
+  padding: var(--spacing-md);
+  flex: 1;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 2;
+}
+
+.playlist-picker__card--grid .playlist-picker__info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, 
+    rgba(0, 0, 0, 1) 0%, 
+    rgba(0, 0, 0, 0.8) 40%, 
+    rgba(0, 0, 0, 0.4) 75%, 
+    transparent 100%
+  );
+  padding: var(--spacing-xl) var(--spacing-xs) var(--spacing-sm);
+}
+
+.playlist-picker__card--compact .playlist-picker__info {
+  padding: 0;
+  background: none;
+  width: 100%;
+}
+
+.playlist-picker__name {
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  color: #fff;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+}
+
+.playlist-picker__card--grid .playlist-picker__name {
+  font-size: 0.95rem;
+  min-height: auto;
+  text-align: center;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+}
+
+.playlist-picker__card--compact .playlist-picker__name {
+  font-size: 0.85rem;
+  font-family: var(--font-body);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: auto;
+  color: var(--color-text-secondary);
+  text-align: left;
+}
+
+.playlist-picker__card--compact .playlist-picker__name::before {
+  content: "";
+  display: block;
+  width: 4px;
+  height: 4px;
+  background-color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.playlist-picker__card--compact:hover .playlist-picker__name {
+  color: #fff;
+}
+.playlist-picker__image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  opacity: 0.3;
+}
+
+.playlist-picker__image-placeholder svg {
+  width: 40%;
+}
+
+/* Overlay & Button - Bütün Kutuyu Kapsayan Kırmızı Mod */
+.playlist-picker__card-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10;
+  padding: var(--spacing-md);
+  text-align: center;
+}
+
+.playlist-picker__card:hover .playlist-picker__card-overlay {
+  opacity: 1;
+}
+
+.playlist-picker__scan-btn {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: var(--font-weight-bold);
+  color: #fff;
+  letter-spacing: 2px;
+  transform: scale(0.8);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  line-height: 1.4;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.playlist-picker__card:hover .playlist-picker__scan-btn {
+  transform: scale(1);
+}
+
+.playlist-picker__card--compact .playlist-picker__scan-btn {
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+}
+
+/* Empty State */
+.playlist-picker__empty {
+  text-align: center;
+  padding: var(--spacing-3xl) var(--spacing-xl);
+  color: var(--color-text-secondary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .playlist-picker__grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: var(--spacing-md);
+  }
+
+  .playlist-picker__title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .playlist-picker__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

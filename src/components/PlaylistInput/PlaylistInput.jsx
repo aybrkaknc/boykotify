@@ -24,13 +24,12 @@ export default function PlaylistInput({ onSubmit, isLoading }) {
     e.preventDefault();
     setError('');
 
-    const playlistId = extractPlaylistId(inputValue.trim());
-    if (!playlistId) {
-      setError('Geçerli bir Spotify playlist linki giriniz.');
+    if (!inputValue.trim()) {
+      setError('Lütfen bir link giriniz.');
       return;
     }
 
-    onSubmit(playlistId);
+    onSubmit(inputValue.trim());
   }
 
   return (
@@ -48,7 +47,7 @@ export default function PlaylistInput({ onSubmit, isLoading }) {
             />
             <button
               type="submit"
-              className="playlist-input__submit"
+              className="playlist-input__submit btn-sonar"
               disabled={isLoading || !inputValue.trim()}
               id="scan-button"
               aria-label="Tarayıcıyı Başlat"

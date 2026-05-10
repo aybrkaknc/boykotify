@@ -1,6 +1,6 @@
 /* ================================================
    Boykotify - Global Tasarım Sistemi
-   Versiyon: 0.0.101
+   Versiyon: 0.0.158
    Palet: Siyah (#000), Kırmızı (#E30A17), Beyaz (#FFF)
    ================================================ */
 
@@ -65,9 +65,40 @@
   --radius-lg: 8px;
 
   /* Geçişler */
-  --transition-fast: 150ms ease;
-  --transition-base: 250ms ease;
-  --transition-slow: 400ms ease;
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ================================================
+   Global Animasyonlar (Smooth Motion)
+   ================================================ */
+
+@keyframes fadeSlideUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes fadeScaleIn {
+  from { 
+    opacity: 0; 
+    transform: scale(0.95); 
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1); 
+  }
+}
+
+.animate-fade-in {
+  animation: fadeSlideUp var(--transition-slow) forwards;
+  width: 100%;
 }
 
 /* Global Sıfırlama */
@@ -77,10 +108,12 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast), opacity var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 html {
   font-size: 16px;
+  scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -126,4 +159,42 @@ a:hover {
 ::selection {
   background: var(--color-primary);
   color: var(--color-text);
+}
+
+/* ================================================
+   Sonar Pulse Efektleri (Tıklama Bazlı)
+   ================================================ */
+
+.btn-sonar {
+  position: relative;
+  overflow: visible;
+}
+
+.btn-sonar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit; /* Butonun şeklini tam al */
+  border: 2px solid var(--color-primary);
+  opacity: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.btn-sonar:active::after {
+  animation: btnSonarClick 0.5s ease-out;
+}
+
+@keyframes btnSonarClick {
+  0% { 
+    transform: scale(1); 
+    opacity: 1; 
+  }
+  100% { 
+    transform: scale(1.3, 1.5); 
+    opacity: 0; 
+  }
 }

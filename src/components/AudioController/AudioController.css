@@ -1,0 +1,170 @@
+.audio-controller {
+  position: fixed;
+  bottom: 80px;
+  right: 48px;
+  height: 52px; /* Sabit yükseklik */
+  background: #000;
+  border: 1px solid var(--color-border);
+  padding: 0 8px; /* Dikey padding'i kaldırdık çünkü height sabit */
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  z-index: 2000;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.audio-controller.collapsed {
+  transform: translateX(calc(100% + 100px));
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* TEK OK: Yüksekliği panel ile aynı (52px) */
+.audio-controller__toggle-btn {
+  position: fixed;
+  bottom: 80px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--color-text-muted);
+  width: 32px;
+  height: 52px; /* Panel ile aynı yükseklik */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2001;
+  transition: all 0.3s ease;
+}
+
+.audio-controller__toggle-btn:focus {
+  outline: none;
+}
+
+.audio-controller__toggle-btn:hover {
+  color: var(--color-primary);
+  transform: translateX(-2px);
+}
+
+.audio-controller__toggle-btn.is-collapsed:hover {
+  transform: translateX(-4px);
+}
+
+.audio-controller__toggle-btn svg {
+  width: 24px;
+  height: 24px;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
+}
+
+.audio-controller__main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.audio-controller__play-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  outline: none;
+  color: var(--color-text-secondary);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.audio-controller__play-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.audio-controller__play-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.audio-controller__play-btn.playing {
+  color: var(--color-primary);
+  border-color: rgba(227, 10, 23, 0.3);
+}
+
+.audio-controller__rewind-btn {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  outline: none;
+  color: var(--color-text-muted);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.audio-controller__rewind-btn:focus {
+  outline: none;
+}
+
+.audio-controller__rewind-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.audio-controller__rewind-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-text-secondary);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.audio-controller__rewind-btn:active {
+  transform: scale(0.95);
+}
+
+.audio-controller__volume {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: ns-resize;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.audio-controller__volume:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.audio-controller__volume-icon {
+  width: 14px;
+  height: 14px;
+  color: var(--color-text-muted);
+}
+
+.audio-controller__readout {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.5px;
+}
+
+.audio-controller__volume:hover .audio-controller__readout {
+  color: var(--color-primary);
+  text-shadow: 0 0 8px rgba(227, 10, 23, 0.4);
+}

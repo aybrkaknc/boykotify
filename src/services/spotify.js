@@ -81,7 +81,7 @@ export async function loginWithSpotify() {
     redirect_uri: REDIRECT_URI,
     code_challenge_method: 'S256',
     code_challenge: codeChallenge,
-    show_dialog: true
+    show_dialog: false
   });
 
   // Spotify OAuth bazen URLSearchParams'in ürettiği "+" işaretli boşlukları algılayamıyor.
@@ -211,6 +211,91 @@ export function extractPlaylistId(url) {
   if (uriMatch) return uriMatch[1];
 
   return null;
+}
+
+/**
+ * Playlist linkinin geçerliliğini ve erişilebilirliğini kontrol eder.
+ * Tarama başlamadan önce "Pre-check" katmanı olarak çalışır.
+ * 
+ * @param {string} url - Kullanıcının yapıştırdığı link.
+ * @returns {Promise<{id: string, name: string}>} - Geçerli ise playlist bilgileri.
+ * @throws {Error} - Link geçersizse veya playlist erişilemezse hata fırlatır.
+ */
+export async function checkPlaylistAccessibility(url) {
+  if (!url) {
+    throw new Error('Lütfen bir çalma listesi linki yapıştırın.');
+  }
+
+  // Link tipini kontrol et (Albüm veya Sanatçı linkleri sık yapıştırılıyor)
+  if (url.includes('/album/')) {
+    throw new Error('Yapıştırdığınız link bir ALBÜM linkidir. Lütfen sadece ÇALMA LİSTESİ (Playlist) linki kullanın.');
+  }
+  if (url.includes('/artist/')) {
+    throw new Error('Yapıştırdığınız link bir SANATÇI linkidir. Lütfen sadece ÇALMA LİSTESİ (Playlist) linki kullanın.');
+  }
+  if (url.includes('/track/')) {
+    throw new Error('Yapıştırdığınız link tek bir ŞARKI linkidir. Lütfen bir ÇALMA LİSTESİ (Playlist) linki kullanın.');
+  }
+
+  const playlistId = extractPlaylistId(url);
+  if (!playlistId) {
+    throw new Error('Geçersiz Spotify linki. Linkin "open.spotify.com/playlist/..." formatında olduğundan emin olun.');
+  }
+
+  try {
+    // API'den playlistin varlığını kontrol et
+    const playlist = await spotifyFetch(`/playlists/${playlistId}?fields=id,name,public,collaborative`);
+    return {
+      id: playlist.id,
+      name: playlist.name
+    };
+  } catch (err) {
+    if (err.message.includes('404')) {
+      throw new Error('Girdiğiniz linke ait bir çalma listesi Spotify üzerinde bulunamadı. Linkin tam kopyalandığından ve listenin silinmediğinden emin olun.');
+    }
+    if (err.message.includes('403')) {
+      throw new Error('Bu çalma listesi "Gizli" (Private) olarak ayarlanmış. Tarama yapabilmemiz için playlist ayarlarına girip "Herkese Açık" (Public) yapmanız gerekiyor.');
+    }
+    throw new Error(`Spotify bağlantı sorunu: ${err.message}. Lütfen linki kontrol edin veya daha sonra tekrar deneyin.`);
+  }
+}
+
+/**
+ * Playlist bilgilerini ve ilk grup şarkı kapaklarını çeker.
+ * Yükleme ekranındaki kolaj için kullanılır.
+ */
+export async function fetchPlaylistMetadata(playlistId) {
+  try {
+    /* Daha geniş bir veri kümesi çekerek çeşitliliği artırıyoruz */
+    const playlist = await spotifyFetch(`/playlists/${playlistId}`);
+    let images = [];
+    
+    if (playlist.tracks && playlist.tracks.items) {
+      /* İlk 100 şarkıdaki tüm farklı kapakları topla */
+      playlist.tracks.items.forEach(item => {
+        const track = item.track;
+        if (track && track.album && track.album.images && track.album.images.length > 0) {
+          const imgUrl = track.album.images[1]?.url || track.album.images[0].url;
+          if (!images.includes(imgUrl)) {
+            images.push(imgUrl);
+          }
+        }
+      });
+    }
+    
+    /* Eğer playlist kapak resmi varsa onu da ekle */
+    if (playlist.images && playlist.images.length > 0) {
+      images.push(playlist.images[0].url);
+    }
+
+    /* Görselleri karıştırarak (shuffle) daha dinamik bir görünüm sağla */
+    images = images.sort(() => Math.random() - 0.5);
+
+    return images;
+  } catch (err) {
+    console.error('Playlist metadata hatası:', err);
+    return [];
+  }
 }
 
 /**
@@ -401,5 +486,19 @@ export async function addTracksToPlaylist(playlistId, trackUris) {
         uris: chunk
       })
     });
+  }
+}
+/**
+ * Giriş yapmış kullanıcının tüm çalma listelerini çeker.
+ * @param {number} limit - Bir seferde çekilecek liste sayısı.
+ * @returns {Promise<Array>} - Playlist objelerinden oluşan liste.
+ */
+export async function fetchUserPlaylists(limit = 50) {
+  try {
+    const data = await spotifyFetch(`/me/playlists?limit=${limit}`);
+    return data.items || [];
+  } catch (err) {
+    console.error('Kullanıcı playlistleri alınamadı:', err);
+    throw new Error('Playlistleriniz yüklenirken bir hata oluştu. Lütfen oturumu yenilemeyi deneyin.');
   }
 }
