@@ -1,7 +1,7 @@
 {
   "name": "boykotify",
   "private": true,
-  "version": "0.0.215",
+  "version": "0.0.255",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.3",
+    "framer-motion": "^12.38.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5"
   },

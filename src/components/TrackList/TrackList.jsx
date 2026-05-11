@@ -11,6 +11,7 @@
  * @param {Function} props.onRemoveBoycotted - Boykotlu şarkıları silme callback'i.
  */
 import { useState, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import './TrackList.css';
 
 export default function TrackList({ tracks, activeFilter = 'all', canRemove, onRemoveBoycotted, onRefresh, isLoading }) {
@@ -84,14 +85,16 @@ export default function TrackList({ tracks, activeFilter = 'all', canRemove, onR
       </div>
 
       <div className="track-list__grid">
-        {filteredTracks.map((track, index) => (
-          <TrackCard 
-            key={`${track.id}-${index}`} 
-            track={track} 
-            canRemove={canRemove} 
-            onRemove={onRemoveBoycotted} 
-          />
-        ))}
+        <AnimatePresence mode="popLayout">
+          {filteredTracks.map((track) => (
+            <TrackCard 
+              key={track.uri || track.id} 
+              track={track} 
+              canRemove={canRemove} 
+              onRemove={onRemoveBoycotted} 
+            />
+          ))}
+        </AnimatePresence>
       </div>
 
       {filteredTracks.length === 0 && (
@@ -103,19 +106,11 @@ export default function TrackList({ tracks, activeFilter = 'all', canRemove, onR
 
 /**
  * TrackCard Bileşeni
- * 
- * Tek bir şarkıyı temsil eden kart bileşeni.
- * Duruma göre kırmızı/yeşil kenarlık ve hover popup gösterir.
- * 
- * @param {Object} props
- * @param {boolean} props.canRemove - Şarkıyı silme yetkisi.
- * @param {Function} props.onRemove - Tek şarkı silme callback'i.
  */
 function TrackCard({ track, canRemove, onRemove }) {
   const statusClass = track.status !== 'unknown' ? `track-card--${track.status}` : '';
   const [popupPos, setPopupPos] = useState('top');
   const cardRef = useRef(null);
-  const [isAnimatingOut, setIsAnimatingOut] = useState(false);
 
   const handleMouseEnter = () => {
     if (!cardRef.current) return;
@@ -130,59 +125,67 @@ function TrackCard({ track, canRemove, onRemove }) {
   const handleAction = (e) => {
     e.stopPropagation();
     if (canRemove && onRemove) {
-      setIsAnimatingOut(true);
-      // Animasyon süresi 400ms (CSS ile uyumlu)
-      setTimeout(() => {
-        onRemove([track.uri]);
-      }, 400);
+      onRemove([track.uri]);
     }
   };
 
   return (
-    <div 
-      className={`track-card ${statusClass} ${isAnimatingOut ? 'track-card--removing' : ''}`} 
+    <motion.div 
+      layout
+      transition={{
+        layout: { type: "spring", stiffness: 200, damping: 25, mass: 0.5 },
+        opacity: { duration: 0.2 },
+      }}
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ 
+        opacity: 0, 
+        y: 30,
+        transition: { duration: 0.2, ease: "easeOut" }
+      }}
+      whileHover={{ y: -5 }}
+      className={`track-card ${statusClass}`} 
       id={`track-${track.id}`}
       ref={cardRef}
       onMouseEnter={handleMouseEnter}
     >
-      <div className="track-card__artwork">
+      {/* Arka Plan Sanatı */}
+      <div className="track-card__artwork-bg">
         {track.albumArt ? (
-          <img src={track.albumArt} alt={track.album} className="track-card__image" loading="lazy" />
+          <img src={track.albumArt} alt={track.album} className="track-card__bg-image" loading="lazy" />
         ) : (
-          <div className="track-card__placeholder">♪</div>
+          <div className="track-card__bg-placeholder">♪</div>
         )}
-        {track.status === 'patriotic' && <span className="track-card__badge track-card__badge--patriotic">★</span>}
+        <div className="track-card__overlay"></div>
       </div>
 
-      {/* Alakasız ve Vatansever şarkılar için sağ üst köşede beyaz silme butonu */}
-      {track.status !== 'boycott' && canRemove && (
-        <button 
-          className="track-card__remove-btn-minimal"
-          onClick={handleAction}
-          disabled={isAnimatingOut}
-          title="Listeden çıkar"
-        >
-          ✕
-        </button>
-      )}
-
-      <div className="track-card__info">
-        <h4 className="track-card__name">{track.name}</h4>
-        <p className="track-card__artist">{track.artists.map(a => a.name).join(', ')}</p>
-        <p className="track-card__album">{track.album}</p>
+      {/* Sağ Üst Bilgi Bloğu */}
+      <div className="track-card__info-wrapper">
+        <div className="track-card__info">
+          <h4 className="track-card__name" title={track.name}>{track.name}</h4>
+          <p className="track-card__artist" title={track.artists.map(a => a.name).join(', ')}>
+            {track.artists.map(a => a.name).join(', ')}
+          </p>
+          <p className="track-card__album" title={track.album}>{track.album}</p>
+        </div>
+        
+        {/* Durum Rozeti - Sol Üst */}
+        {track.status === 'patriotic' && (
+          <span className="track-card__badge-v2">★</span>
+        )}
       </div>
 
-      {track.status === 'boycott' && canRemove && (
+      {/* Alt Buton Bloğu */}
+      <div className="track-card__footer">
         <button 
-          className="track-card__action-btn"
+          className="track-card__action-btn-v2"
           onClick={handleAction}
-          disabled={isAnimatingOut}
         >
-          {isAnimatingOut ? '...' : 'S*KTİR ET!'}
+          {track.status === 'boycott' ? 'BOYKOT' : 'YİNE DE SİL'}
         </button>
-      )}
+      </div>
 
-      {/* Hover Popup - Boykot veya Vatansever bilgisi */}
+      {/* Hover Popup */}
       {track.entity && (
         <div className={`track-card__popup track-card__popup--pos-${popupPos}`}>
           <div className="track-card__popup-header">
@@ -206,6 +209,6 @@ function TrackCard({ track, canRemove, onRemove }) {
           )}
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }

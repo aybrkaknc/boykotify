@@ -95,8 +95,8 @@
 /* Şarkı Grid */
 .track-list__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--spacing-md);
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--spacing-lg);
 }
 
 .track-list__empty {
@@ -107,201 +107,198 @@
 }
 
 /* ================================================
-   TrackCard
+   TrackCard (Kare Form)
    ================================================ */
 
 .track-card {
   position: relative;
   display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  padding: var(--spacing-md);
+  flex-direction: column;
+  aspect-ratio: 1 / 1;
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  transition: all var(--transition-fast);
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  will-change: transform, opacity;
   cursor: default;
+  padding: 0;
 }
 
 .track-card:hover {
   border-color: var(--color-border-hover);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
-/* Boykotlu Kart */
-.track-card--boycott {
-  border-color: var(--color-boycott);
-  background-color: var(--color-boycott-bg);
+/* Arka Plan Kapağı */
+.track-card__artwork-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
 }
 
-.track-card--boycott:hover {
-  border-color: var(--color-boycott);
-}
-
-/* Vatansever Kart */
-.track-card--patriotic {
-  border-color: var(--color-patriotic);
-  background-color: var(--color-patriotic-bg);
-}
-
-.track-card--patriotic:hover {
-  border-color: var(--color-patriotic);
-}
-
-/* Albüm Kapağı */
-.track-card__artwork {
-  position: relative;
-  width: 56px;
-  height: 56px;
-  flex-shrink: 0;
-}
-
-.track-card__image {
+.track-card__bg-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: var(--radius-sm);
+  opacity: 0.35;
+  filter: grayscale(0.6) brightness(0.7);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.track-card__placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--color-border);
-  border-radius: var(--radius-sm);
-  font-size: var(--font-size-xl);
-  color: var(--color-text-muted);
-}
-
-/* Durum Rozeti */
-.track-card__badge {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  font-size: 10px;
-  font-weight: var(--font-weight-bold);
-  border: none;
-  z-index: 2;
-}
-
-button.track-card__remove-btn {
-  cursor: pointer;
-  transition: transform 0.2s ease, background-color 0.2s ease;
-}
-
-button.track-card__remove-btn:hover:not(:disabled) {
-  transform: scale(1.2);
-  background-color: #dc2626; /* Darker red on hover */
-}
-
-button.track-card__remove-btn:disabled {
-  cursor: not-allowed;
+.track-card:hover .track-card__bg-image {
   opacity: 0.6;
+  filter: grayscale(0.2) brightness(0.9);
+  transform: scale(1.08);
 }
 
-.track-card__badge--boycott {
-  background-color: var(--color-boycott);
-  color: var(--color-text);
+.track-card__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.3) 0%,
+    rgba(0, 0, 0, 0.5) 40%,
+    rgba(0, 0, 0, 0.9) 100%
+  );
+  z-index: 1;
 }
 
-.track-card__badge--patriotic {
-  background-color: var(--color-patriotic);
-  color: var(--color-text);
+/* Sağ Üst Bilgi Bloğu */
+.track-card__info-wrapper {
+  position: relative;
+  z-index: 2;
+  padding: var(--spacing-md);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; /* Sağa yasla */
 }
 
-/* Şarkı Bilgisi */
 .track-card__info {
-  flex: 1;
-  min-width: 0;
+  text-align: right;
+  max-width: 90%;
 }
 
 .track-card__name {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
+  font-size: 1.1rem;
+  font-weight: var(--font-weight-bold);
   color: var(--color-text);
+  margin-bottom: 2px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-bottom: 2px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
 }
 
 .track-card__artist {
-  font-size: var(--font-size-xs);
+  font-size: 0.85rem;
   color: var(--color-text-secondary);
+  margin-bottom: 2px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  opacity: 0.9;
 }
 
 .track-card__album {
-  font-size: var(--font-size-xs);
+  font-size: 0.75rem;
   color: var(--color-text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  opacity: 0.7;
 }
 
-/* S*ktir Et! Butonu */
-.track-card__action-btn {
-  padding: 4px 8px;
-  background-color: transparent;
+/* Durum Rozeti V2 */
+.track-card__badge-v2 {
+  position: absolute;
+  top: var(--spacing-md);
+  left: var(--spacing-md);
+  font-size: 1.2rem;
+  color: var(--color-patriotic);
+  text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+/* Alt Buton Bloğu */
+.track-card__footer {
+  position: relative;
+  z-index: 2;
+  margin-top: auto; /* En alta it */
+  width: 100%;
+}
+
+.track-card__action-btn-v2 {
+  width: 100%;
+  padding: 8px var(--spacing-sm);
+  background: rgba(255, 255, 255, 0.08);
   color: var(--color-text);
   border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   font-family: var(--font-heading);
-  font-size: 1.1rem;
-  letter-spacing: 0.5px;
+  font-size: 0.85rem;
+  letter-spacing: 4px;
   text-transform: uppercase;
   cursor: pointer;
-  transition: all var(--transition-fast);
-  flex-shrink: 0;
-  margin-left: var(--spacing-sm);
-  opacity: 0.8;
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  opacity: 0;
+  transform: translateY(10px);
+  visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.track-card__action-btn:hover {
+.track-card:hover .track-card__action-btn-v2 {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+/* Kategoriye Özel Buton Renkleri */
+.track-card--boycott .track-card__action-btn-v2 {
   color: var(--color-boycott);
-  opacity: 1;
-  text-shadow: 0 0 10px rgba(227, 10, 23, 0.4);
-  transform: translateX(2px);
+  border-top-color: rgba(227, 10, 23, 0.4);
+  background: rgba(227, 10, 23, 0.15);
 }
 
-/* Minimal Silme Butonu (Alakasız Şarkılar İçin) */
-.track-card__remove-btn-minimal {
-  position: absolute;
-  top: 10px;
-  right: 12px;
-  background: transparent;
-  border: none;
-  color: #FFFFFF;
-  font-size: 16px;
-  line-height: 1;
-  cursor: pointer;
-  opacity: 0.4;
-  transition: all var(--transition-fast);
-  z-index: 10;
-  padding: 4px;
+.track-card--patriotic .track-card__action-btn-v2 {
+  color: var(--color-patriotic);
+  border-top-color: rgba(46, 204, 113, 0.4);
+  background: rgba(46, 204, 113, 0.15);
 }
 
-.track-card__remove-btn-minimal:hover {
-  opacity: 1;
-  transform: scale(1.2);
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+.track-card:not(.track-card--boycott):not(.track-card--patriotic) .track-card__action-btn-v2 {
+  color: #A5B1C2; /* Ice Gray */
+  border-top-color: rgba(165, 177, 194, 0.3);
+  background: rgba(165, 177, 194, 0.1);
 }
 
-/* Buton hoverlandığında tüm kartın büyümesi */
-.track-card:has(.track-card__action-btn:hover),
-.track-card:has(.track-card__remove-btn-minimal:hover) {
-  transform: scale(1.02);
-  z-index: 10;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+/* Hover'da Doygunluk Artışı */
+.track-card--boycott:hover .track-card__action-btn-v2:hover { background: rgba(227, 10, 23, 0.45); color: #fff; }
+.track-card--patriotic:hover .track-card__action-btn-v2:hover { background: rgba(46, 204, 113, 0.45); color: #fff; }
+.track-card:not(.track-card--boycott):not(.track-card--patriotic):hover .track-card__action-btn-v2:hover { background: rgba(165, 177, 194, 0.35); color: #fff; }
+
+/* Boykot/Vatansever/Alakasız Renk Vurguları */
+.track-card--boycott {
+  border-color: rgba(227, 10, 23, 0.6);
+  box-shadow: 0 0 30px rgba(227, 10, 23, 0.25);
 }
+
+.track-card--patriotic {
+  border-color: rgba(46, 204, 113, 0.4);
+  box-shadow: 0 0 20px rgba(46, 204, 113, 0.15);
+}
+
+.track-card:not(.track-card--boycott):not(.track-card--patriotic) {
+  border-color: rgba(165, 177, 194, 0.3);
+  box-shadow: 0 0 15px rgba(165, 177, 194, 0.1);
+}
+
+/* Hover Etkileşimleri */
+.track-card--boycott:has(.track-card__action-btn-v2:hover) { border-color: var(--color-boycott); }
+.track-card--patriotic:has(.track-card__action-btn-v2:hover) { border-color: var(--color-patriotic); }
+.track-card:not(.track-card--boycott):not(.track-card--patriotic):has(.track-card__action-btn-v2:hover) { border-color: #A5B1C2; }
 
 /* ================================================
    Hover Popup (Boykot Nedeni)
@@ -410,33 +407,12 @@ button.track-card__remove-btn:disabled {
   font-weight: var(--font-weight-medium);
 }
 
-/* Yırtıcı Silme Animasyonu */
-.track-card--removing {
-  animation: predatoryOut 0.4s cubic-bezier(0.36, 0, 0.66, -0.56) forwards;
-  pointer-events: none;
-  z-index: 100;
-}
-
-@keyframes predatoryOut {
-  0% {
-    transform: scale(1) rotate(0);
-  }
-  15% {
-    transform: scale(1.1) rotate(-5deg);
-    box-shadow: 0 0 30px rgba(227, 10, 23, 0.6);
-  }
-  30% {
-    transform: scale(1.1) rotate(5deg) translateX(-10px);
-  }
-  50% {
-    transform: scale(0.8) rotate(-15deg) translateX(20px);
-    opacity: 0.8;
-  }
-  100% {
-    transform: scale(0) rotate(45deg) translateX(200px);
-    opacity: 0;
-    filter: blur(10px);
-  }
+/* Framer Motion ile yönetilen layout geçişleri */
+.track-list__grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1rem;
+  padding: 1rem 0;
 }
 
 /* Responsive */

@@ -6,6 +6,10 @@
 
 /* CSS Değişkenleri (Design Tokens) */
 :root {
+  /* Layout Ölçüleri */
+  --header-height: 70px;
+  --marquee-height: 50px;
+
   /* Ana Renkler */
   --color-bg: #000000;
   --color-surface: #0A0A0A;
@@ -116,6 +120,7 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden; /* Yatay kaymayı engelle */
 }
 
 body {
@@ -123,8 +128,9 @@ body {
   background-color: var(--color-bg);
   color: var(--color-text);
   line-height: 1.6;
-  min-height: 100vh;
-  overflow-x: hidden;
+  margin: 0;
+  height: 100vh;
+  overflow: hidden;
 }
 
 button {

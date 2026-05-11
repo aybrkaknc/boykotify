@@ -5,6 +5,7 @@
  * Spotify OAuth akışını, playlist taramayı ve sonuç gösterimini yönetir.
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Header from './components/Header/Header';
 import AudioController from './components/AudioController/AudioController';
 import PlaylistInput from './components/PlaylistInput/PlaylistInput';
@@ -31,7 +32,7 @@ import {
   matchTracksWithEntities,
   calculatePatriotScore
 } from './services/boycott';
-import BackgroundMusic from './components/BackgroundMusic/BackgroundMusic';
+import RippleEffect from './components/RippleEffect/RippleEffect';
 import './App.css';
 
 const LOADING_MESSAGES = [
@@ -78,6 +79,24 @@ const LOADING_MESSAGES = [
   "Etnik Fitne Melodileri Deşifre Ediliyor..."
 ];
 
+const BackgroundScroll = () => {
+  const lines = Array.from({ length: 24 });
+  return (
+    <div className="app-background-scroll">
+      {lines.map((_, i) => (
+        <div key={i} className={`app-background-line line-${i % 2 === 0 ? 'right' : 'left'}`}>
+          <div className="app-background-text">
+            {"NE MUTLU TÜRK'ÜM DİYENE! ".repeat(10)}
+          </div>
+          <div className="app-background-text">
+            {"NE MUTLU TÜRK'ÜM DİYENE! ".repeat(10)}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 export default function App() {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -96,35 +115,23 @@ export default function App() {
   const [modalType, setModalType] = useState('error'); // 'error' veya 'success'
   const [isCopied, setIsCopied] = useState(false);
   const [allEntities, setAllEntities] = useState([]);
-  // Müzik Durumu
-  const [isMusicPlaying, setIsMusicPlaying] = useState(() => {
-    const saved = localStorage.getItem('music_playing');
-    return saved !== null ? saved === 'true' : false;
-  });
-  const [musicVolume, setMusicVolume] = useState(() => {
-    const saved = localStorage.getItem('music_volume');
-    return saved !== null ? parseInt(saved, 10) : 15;
-  });
-  const [musicRestartTrigger, setMusicRestartTrigger] = useState(0);
-
-  // Müzik durumunu kaydet
-  useEffect(() => {
-    localStorage.setItem('music_playing', isMusicPlaying.toString());
-  }, [isMusicPlaying]);
-
-  // Ses seviyesini kaydet
-  useEffect(() => {
-    localStorage.setItem('music_volume', musicVolume.toString());
-  }, [musicVolume]);
-
-  const handleRestartMusic = () => {
-    setMusicRestartTrigger(prev => prev + 1);
-  };
-
   const [activeFilter, setActiveFilter] = useState('all');
   const [userPlaylists, setUserPlaylists] = useState(null);
   const [showManualInput, setShowManualInput] = useState(false);
   const [isHeaderScrolled, setIsHeaderScrolled] = useState(false);
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
+  const [viewMode, setViewMode] = useState('grid');
+
+  // Mouse takibi
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
+      document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
 
   // Scroll takibi
   useEffect(() => {
@@ -325,7 +332,8 @@ export default function App() {
    * @param {string} playlistId - Taranacak playlist ID'si.
    */
   const handleScanPlaylist = useCallback(async (playlistUrlOrId) => {
-    /* 1. Reset State */
+    /* 1. Reset State & UI */
+    setIsPickerOpen(false); // Paneli kapat
     setError('');
     setErrorSolution('');
     setErrorDetails('');
@@ -451,11 +459,8 @@ export default function App() {
 
   return (
     <div className="app" id="app-root">
-      <BackgroundMusic 
-        isPlaying={isMusicPlaying} 
-        volume={musicVolume} 
-        restartTrigger={musicRestartTrigger}
-      />
+      <RippleEffect />
+      <BackgroundScroll />
       {/* Sol Kenar — Sonsuz Kayan Sanatçı Listesi */}
       <BoycottMarquee entities={allEntities} />
 
@@ -463,74 +468,77 @@ export default function App() {
         user={user} 
         onLogin={handleLogin} 
         onLogout={handleLogout} 
-        isMusicPlaying={isMusicPlaying}
-        onToggleMusic={() => setIsMusicPlaying(!isMusicPlaying)}
-        musicVolume={musicVolume}
-        onVolumeChange={setMusicVolume}
         isScrolled={user && isHeaderScrolled}
+        isPickerOpen={isPickerOpen}
+        onTogglePicker={() => setIsPickerOpen(!isPickerOpen)}
+        onManualInput={() => setShowManualInput(true)}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        hasPlaylists={userPlaylists && userPlaylists.length > 0}
       />
 
-      <AudioController 
-        isMusicPlaying={isMusicPlaying}
-        onToggleMusic={() => setIsMusicPlaying(!isMusicPlaying)}
-        musicVolume={musicVolume}
-        onVolumeChange={setMusicVolume}
-        onRestartMusic={handleRestartMusic}
-      />
 
-      <main className="app__main">
+
+      <main className={`app__main ${isPickerOpen ? 'app__main--picker-open' : ''}`}>
         {/* Karşılama Bölümü */}
         {!hasResults && !isLoading && (
-          <section className="app__hero animate-fade-in" id="hero-section">
-            <div className="app__hero-content">
-              <h2 className="app__hero-title">
-                Müziğinde <a 
-                  href="https://www.youtube.com/playlist?list=PLCeSne8xqy-CaTlFHHzkrRA7bMASJCpSW" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="app__hero-accent app__hero-link"
-                >İhanete</a> İZİN VERME!
-              </h2>
-              
-              {!user && (
-                <button
-                  className="app__hero-login-btn btn-sonar"
-                  onClick={handleLogin}
-                  id="hero-login-button"
-                >
-                  <div className="btn-shine"></div>
-                  <span className="btn-icon">
-                    <svg viewBox="0 0 24 24" width="24" height="24">
-                      <path fill="currentColor" d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
-                    </svg>
-                  </span>
-                  <div className="btn-text-content">
-                    <span className="btn-label">Spotify ile Giriş Yap</span>
-                  </div>
-                </button>
-              )}
-
-              {user && showManualInput && (
-                <div className="app__manual-input-wrapper">
-                  <PlaylistInput onSubmit={handleScanPlaylist} isLoading={isLoading} />
-                  <button 
-                    className="app__picker-back-btn" 
-                    onClick={() => setShowManualInput(false)}
+          <>
+            <section className={`app__hero animate-fade-in ${isPickerOpen ? 'app__hero--hidden' : ''}`} id="hero-section">
+              <div className="app__hero-content">
+                <h2 className="app__hero-title">
+                  <span className="app__hero-line hero-line-1">MÜZİĞİNDE</span>
+                  <a 
+                    href="https://www.youtube.com/playlist?list=PLCeSne8xqy-CaTlFHHzkrRA7bMASJCpSW" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="app__hero-accent app__hero-link app__hero-line hero-line-2"
+                  >İHANETE</a>
+                  <span className="app__hero-line hero-line-3">İZİN VERME!</span>
+                </h2>
+                
+                {!user && (
+                  <button
+                    className="app__hero-login-btn btn-sonar"
+                    onClick={handleLogin}
+                    id="hero-login-button"
                   >
-                    ← Listelerime Geri Dön
+                    <div className="btn-shine"></div>
+                    <span className="btn-icon">
+                      <svg viewBox="0 0 24 24" width="24" height="24">
+                        <path fill="currentColor" d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+                      </svg>
+                    </span>
+                    <div className="btn-text-content">
+                      <span className="btn-label">Spotify ile Giriş Yap</span>
+                    </div>
                   </button>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            </section>
 
             {user && !showManualInput && (
               <PlaylistPicker 
                 playlists={userPlaylists} 
                 onSelect={handleScanPlaylist}
                 onManualInput={() => setShowManualInput(true)}
+                isPickerOpen={isPickerOpen}
+                onTogglePicker={() => setIsPickerOpen(!isPickerOpen)}
+                viewMode={viewMode}
               />
             )}
-          </section>
+
+            {user && showManualInput && (
+              <div className="app__manual-input-wrapper">
+                <PlaylistInput onSubmit={handleScanPlaylist} isLoading={isLoading} />
+                <button 
+                  className="app__picker-back-btn" 
+                  onClick={() => setShowManualInput(false)}
+                >
+                  ← Listelerime Geri Dön
+                </button>
+              </div>
+            )}
+          </>
         )}
           {/* Modal Overlay (Hata veya Başarı) */}
         {error && (
@@ -624,7 +632,18 @@ export default function App() {
               <div className="app__radar-circle"></div>
               
               <div className="app__loading-text-wrapper">
-                <h3 className="app__loading-text">{LOADING_MESSAGES[loadingMessageIndex]}</h3>
+                <AnimatePresence mode="wait">
+                  <motion.h3 
+                    key={loadingMessageIndex}
+                    className="app__loading-text"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                  >
+                    {LOADING_MESSAGES[loadingMessageIndex]}
+                  </motion.h3>
+                </AnimatePresence>
               </div>
             </div>
           </div>

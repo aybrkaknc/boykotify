@@ -1,34 +1,50 @@
 import { useState, useEffect, useRef } from 'react';
 import './Header.css';
 
-export default function Header({ user, onLogin, onLogout, isScrolled }) {
+export default function Header({ 
+  user, 
+  onLogin, 
+  onLogout, 
+  isScrolled,
+  isPickerOpen,
+  onTogglePicker,
+  onManualInput,
+  viewMode,
+  onViewModeChange,
+  hasPlaylists
+}) {
   const [isPinned, setIsPinned] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const helpRef = useRef(null);
+  const userMenuRef = useRef(null);
 
   useEffect(() => {
     function handleClickOutside(event) {
       if (helpRef.current && !helpRef.current.contains(event.target)) {
         setIsPinned(false);
       }
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setIsUserMenuOpen(false);
+      }
     }
 
-    if (isPinned) {
+    if (isPinned || isUserMenuOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
     
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isPinned]);
+  }, [isPinned, isUserMenuOpen]);
 
   const showHelp = isPinned || isHovered;
 
   return (
-    <header className={`header ${isScrolled ? 'header--scrolled' : ''}`} id="app-header">
+    <header className={`header ${isPickerOpen ? 'header--picker-mode' : ''} ${isScrolled ? 'header--scrolled' : ''}`} id="app-header">
       <div className="header__inner">
         {/* Normal Header İçeriği */}
-        <div className="header__content-group">
+        <div className={`header__content-group ${isPickerOpen ? 'header__content-group--hidden' : ''}`}>
           <div className="header__left">
             <div 
               className="header__help" 
@@ -83,7 +99,6 @@ export default function Header({ user, onLogin, onLogout, isScrolled }) {
             </div>
             
             <div className="header__patriotic">
-              <span className="header__patriotic-text">Ne Mutlu Türk'üm Diyene!</span>
               <img 
                 src="https://flagcdn.com/w160/tr.png" 
                 alt="Türk Bayrağı" 
@@ -100,37 +115,111 @@ export default function Header({ user, onLogin, onLogout, isScrolled }) {
 
           <div className="header__actions">
             {user && (
-              <div className="header__user">
-                {user.images?.[0] && (
-                  <img
-                    className="header__avatar"
-                    src={user.images[0].url}
-                    alt={user.display_name}
-                  />
-                )}
-                <span className="header__username">{user.display_name}</span>
-                <button
-                  className="header__btn header__btn--logout"
-                  onClick={onLogout}
-                  id="logout-button"
+              <div className="header__user" ref={userMenuRef}>
+                <div 
+                  className={`header__user-trigger ${isUserMenuOpen ? 'active' : ''}`}
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                 >
-                  Çıkış Yap
-                </button>
+                  <span className="header__username">{user.display_name}</span>
+                  {user.images?.[0] && (
+                    <img
+                      className="header__avatar"
+                      src={user.images[0].url}
+                      alt={user.display_name}
+                    />
+                  )}
+                </div>
+
+                {isUserMenuOpen && (
+                  <div className="header__user-dropdown">
+                    <button
+                      className="header__dropdown-btn header__dropdown-btn--logout"
+                      onClick={() => {
+                        setIsUserMenuOpen(false);
+                        onLogout();
+                      }}
+                    >
+                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                      </svg>
+                      Çıkış Yap
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
         </div>
 
-        {/* Scrolled Slogan (Sticky Mod) */}
-        <div className="header__sticky-slogan">
-          <span className="header__slogan-text">
-            Müziğinde <a 
-              href="https://www.youtube.com/playlist?list=PLCeSne8xqy-CaTlFHHzkrRA7bMASJCpSW" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="header__slogan-accent"
-            >İhanete</a> İZİN VERME!
-          </span>
+        {/* Yeni Picker Görünümü (Expanded Mode) */}
+        <div className={`header__picker-mode ${isPickerOpen ? 'header__picker-mode--visible' : ''}`}>
+          <div className="header__picker-left">
+            <button 
+              className="header__picker-toggle-btn btn-sonar"
+              onClick={onTogglePicker}
+            >
+              <div className="btn-shine"></div>
+              <span className="btn-icon">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </span>
+              <div className="btn-text-content">
+                <span className="btn-label">Kütüphaneyi Gizle</span>
+              </div>
+            </button>
+          </div>
+          
+          <div className="header__picker-center">
+            <h2 className="header__picker-title">
+              Müziğinde <a 
+                href="https://www.youtube.com/playlist?list=PLCeSne8xqy-CaTlFHHzkrRA7bMASJCpSW" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="header__picker-accent"
+              >İhanete</a> İzin Verme!
+            </h2>
+          </div>
+
+          <div className="header__picker-right">
+            <button className="header__picker-manual-link" onClick={onManualInput}>
+              veya Elle Gir
+            </button>
+            {hasPlaylists && (
+              <div className="header__picker-view-controls">
+                <div className={`header__picker-view-indicator header__picker-view-indicator--${viewMode}`} />
+                <button 
+                  className={`header__picker-view-btn ${viewMode === 'grid' ? 'active' : ''}`}
+                  onClick={() => onViewModeChange('grid')}
+                  title="Izgara Görünümü"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                  </svg>
+                </button>
+                <button 
+                  className={`header__picker-view-btn ${viewMode === 'compact' ? 'active' : ''}`}
+                  onClick={() => onViewModeChange('compact')}
+                  title="Kompakt Görünüm"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="8" y1="6" x2="21" y2="6"></line>
+                    <line x1="8" y1="12" x2="21" y2="12"></line>
+                    <line x1="8" y1="18" x2="21" y2="18"></line>
+                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                  </svg>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </header>
