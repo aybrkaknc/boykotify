@@ -19,7 +19,7 @@ export default function BackgroundMusic({ isPlaying, volume, restartTrigger }) {
         width: '0',
         videoId: '6Ujs0_z_amI',
         playerVars: {
-          autoplay: 1,
+          autoplay: 0,
           loop: 1,
           playlist: '6Ujs0_z_amI',
           controls: 0,

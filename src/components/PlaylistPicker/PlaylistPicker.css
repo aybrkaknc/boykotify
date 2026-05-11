@@ -16,14 +16,13 @@
 }
 
 .playlist-picker__header {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
   margin-bottom: var(--spacing-xl);
-  padding: 0 var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
   border-bottom: 1px solid var(--color-border);
-  padding-bottom: var(--spacing-sm);
-  flex-wrap: wrap;
+  padding-bottom: var(--spacing-md);
   gap: var(--spacing-md);
   transition: all 0.3s ease;
 }
@@ -33,64 +32,75 @@
   border-bottom-color: transparent;
 }
 
-.playlist-picker__header-left {
-  display: flex;
-  align-items: center; /* Merkeze hizala */
-  gap: var(--spacing-sm);
+.playlist-picker__header-spacer {
+  width: 24px; /* Eski buton genişliği kadar yer kaplasın denge için */
 }
 
-.playlist-picker__collapse-btn {
-  background: transparent;
+.playlist-picker__toggle-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  background: #fff;
+  color: #000;
+  padding: 12px 28px;
+  border-radius: 16px;
   border: none;
-  outline: none;
-  color: var(--color-text-muted);
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-family: var(--font-family);
+  font-weight: 600;
+  transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05) inset;
+  overflow: hidden;
   cursor: pointer;
-  padding: 0;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  margin-right: -4px;
+  outline: none !important;
 }
 
-.playlist-picker__collapse-btn:focus {
-  outline: none;
+.playlist-picker__toggle-btn:focus,
+.playlist-picker__toggle-btn:active,
+.playlist-picker__toggle-btn:focus-visible {
+  outline: none !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-.playlist-picker__collapse-btn svg {
-  width: 20px;
-  height: 20px;
+.playlist-picker__toggle-btn:hover {
+  background: #f8f8f8;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.1) inset;
 }
 
-.playlist-picker__collapse-btn.collapsed {
-  transform: rotate(-90deg);
-}
-
-.playlist-picker__collapse-btn:hover {
-  color: var(--color-primary);
-  background-color: rgba(227, 10, 23, 0.05);
-  border-radius: 50%;
-}
-
-.playlist-picker__title {
-  font-family: var(--font-heading);
-  font-size: 1.6rem;
+.playlist-picker__toggle-btn.is-collapsed {
+  background-color: var(--color-primary);
   color: #fff;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin: 0;
-  line-height: 1; /* Dikey hizalama için eklendi */
-  white-space: nowrap;
-  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(227, 10, 23, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+}
+
+.playlist-picker__toggle-btn.is-collapsed:hover {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 12px 35px rgba(227, 10, 23, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+}
+
+.playlist-picker__toggle-btn.is-collapsed:focus,
+.playlist-picker__toggle-btn.is-collapsed:active {
+  box-shadow: 0 0 35px rgba(227, 10, 23, 0.5);
+}
+
+.playlist-picker__toggle-btn:active {
+  transform: translateY(0);
+}
+
+.playlist-picker__header-right {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-md);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.playlist-picker__title:hover {
-  color: var(--color-primary);
-  text-shadow: 0 0 15px rgba(227, 10, 23, 0.4);
+.playlist-picker__header-right.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(20px);
 }
 
 .playlist-picker__manual-link {
@@ -180,9 +190,9 @@
   opacity: 1;
   overflow: hidden;
   transition: 
-    max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1),
-    opacity 0.4s ease,
-    transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height 1.0s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.6s ease,
+    transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   transform-origin: top;
 }
 
@@ -196,7 +206,7 @@
 /* Yan Elemanların Gizlenmesi */
 .playlist-picker__manual-link,
 .playlist-picker__view-controls {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .playlist-picker__manual-link.hidden,
@@ -210,14 +220,14 @@
 /* Grid/Compact Mod Ayarları */
 .playlist-picker__grid--grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(8, 1fr);
   gap: var(--spacing-md);
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .playlist-picker__grid--compact {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 0; /* Çizgilerin birleşmesi için gap 0 */
   border: 1px solid rgba(255, 255, 255, 0.05);
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -298,8 +308,8 @@
 }
 
 .playlist-picker__card--compact .playlist-picker__image-container {
-  width: 48px;
-  height: 48px;
+  width: 36px;
+  height: 36px;
   flex-shrink: 0;
   border-radius: var(--radius-sm);
 }
@@ -411,7 +421,7 @@
   align-items: center;
   justify-content: center;
   opacity: 0;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
   z-index: 10;
   padding: var(--spacing-md);
   text-align: center;
@@ -428,7 +438,7 @@
   color: #fff;
   letter-spacing: 2px;
   transform: scale(0.8);
-  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
   line-height: 1.4;
   text-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }

@@ -64,10 +64,10 @@
   --radius-md: 6px;
   --radius-lg: 8px;
 
-  /* Geçişler */
-  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+  /* Geçişler (Sakin ve Akışkan) */
+  --transition-fast: 250ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --transition-base: 500ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --transition-slow: 900ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 /* ================================================
@@ -127,6 +127,17 @@ body {
   overflow-x: hidden;
 }
 
+button {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus,
+button:active,
+button:focus-visible {
+  outline: none !important;
+}
+
 a {
   color: var(--color-primary);
   text-decoration: none;
@@ -135,6 +146,12 @@ a {
 
 a:hover {
   color: var(--color-primary-hover);
+}
+
+a:focus,
+a:active,
+a:focus-visible {
+  outline: none !important;
 }
 
 /* Scrollbar Özelleştirme */
@@ -186,6 +203,67 @@ a:hover {
 
 .btn-sonar:active::after {
   animation: btnSonarClick 0.5s ease-out;
+}
+
+/* ================================================
+   Yeni Buton Tasarım Sistemi (Shine & Icon & Double Text)
+   ================================================ */
+
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.btn-text-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.btn-label {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.btn-subtext {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  font-weight: 400;
+  margin-top: 1px;
+}
+
+.btn-shine {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transform: skewX(-25deg);
+  transition: 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  pointer-events: none;
+}
+
+button:hover .btn-shine,
+.app__hero-login-btn:hover .btn-shine,
+.playlist-picker__toggle-btn:hover .btn-shine {
+  left: 150%;
+}
+
+button:hover .btn-icon,
+.app__hero-login-btn:hover .btn-icon,
+.playlist-picker__toggle-btn:hover .btn-icon {
+  transform: scale(1.1) rotate(-5deg);
 }
 
 @keyframes btnSonarClick {

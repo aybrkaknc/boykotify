@@ -3,9 +3,11 @@ import './PlaylistPicker.css';
 
 export default function PlaylistPicker({ playlists, onSelect, onManualInput }) {
   const [viewMode, setViewMode] = useState('grid');
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
-  if (!playlists || playlists.length === 0) {
+  if (playlists === null) return null;
+
+  if (playlists.length === 0) {
     return (
       <div className="playlist-picker__empty">
         <p>Kütüphanenizde çalma listesi bulunamadı.</p>
@@ -19,55 +21,65 @@ export default function PlaylistPicker({ playlists, onSelect, onManualInput }) {
   return (
     <div className={`playlist-picker ${isCollapsed ? 'is-collapsed' : ''}`}>
       <div className="playlist-picker__header">
-        <div className="playlist-picker__header-left">
-          <button 
-            className={`playlist-picker__collapse-btn ${isCollapsed ? 'collapsed' : ''}`}
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            aria-label={isCollapsed ? 'Genişlet' : 'Daralt'}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="6 9 12 15 18 9"></polyline>
+        <div className="playlist-picker__header-spacer" />
+
+        <button 
+          className={`playlist-picker__toggle-btn btn-sonar ${isCollapsed ? 'is-collapsed' : ''}`}
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          aria-expanded={!isCollapsed}
+        >
+          <div className="btn-shine"></div>
+          <span className="btn-icon">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="8" y1="6" x2="21" y2="6"></line>
+              <line x1="8" y1="12" x2="21" y2="12"></line>
+              <line x1="8" y1="18" x2="21" y2="18"></line>
+              <line x1="3" y1="6" x2="3.01" y2="6"></line>
+              <line x1="3" y1="12" x2="3.01" y2="12"></line>
+              <line x1="3" y1="18" x2="3.01" y2="18"></line>
             </svg>
-          </button>
-          <h3 
-            className="playlist-picker__title" 
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            style={{ cursor: 'pointer' }}
-          >
-            Kütüphaneden Seç
-          </h3>
+          </span>
+          <div className="btn-text-content">
+            <span className="btn-label">Kütüphaneden Seç</span>
+          </div>
+        </button>
+
+        <div className={`playlist-picker__header-right ${isCollapsed ? 'hidden' : ''}`}>
           <button 
             className="playlist-picker__manual-link" 
             onClick={onManualInput}
           >
             veya Elle Gir
           </button>
-        </div>
-        <div className={`playlist-picker__view-controls ${isCollapsed ? 'hidden' : ''}`}>
-          <div className={`playlist-picker__view-indicator playlist-picker__view-indicator--${viewMode}`} />
-          <button 
-            className={`playlist-picker__view-btn ${viewMode === 'grid' ? 'active' : ''}`}
-            onClick={() => setViewMode('grid')}
-            title="Izgara Görünümü"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="3" y="3" width="7" height="7"></rect>
-              <rect x="14" y="3" width="7" height="7"></rect>
-              <rect x="14" y="14" width="7" height="7"></rect>
-              <rect x="3" y="14" width="7" height="7"></rect>
-            </svg>
-          </button>
-          <button 
-            className={`playlist-picker__view-btn ${viewMode === 'compact' ? 'active' : ''}`}
-            onClick={() => setViewMode('compact')}
-            title="Kompakt Görünüm"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="3" y1="6" x2="21" y2="6"></line>
-              <line x1="3" y1="12" x2="21" y2="12"></line>
-              <line x1="3" y1="18" x2="21" y2="18"></line>
-            </svg>
-          </button>
+          <div className="playlist-picker__view-controls">
+            <div className={`playlist-picker__view-indicator playlist-picker__view-indicator--${viewMode}`} />
+            <button 
+              className={`playlist-picker__view-btn ${viewMode === 'grid' ? 'active' : ''}`}
+              onClick={() => setViewMode('grid')}
+              title="Izgara Görünümü"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg>
+            </button>
+            <button 
+              className={`playlist-picker__view-btn ${viewMode === 'compact' ? 'active' : ''}`}
+              onClick={() => setViewMode('compact')}
+              title="Kompakt Görünüm"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="8" y1="6" x2="21" y2="6"></line>
+                <line x1="8" y1="12" x2="21" y2="12"></line>
+                <line x1="8" y1="18" x2="21" y2="18"></line>
+                <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                <line x1="3" y1="18" x2="3.01" y2="18"></line>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 

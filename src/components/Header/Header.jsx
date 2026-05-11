@@ -114,7 +114,7 @@ export default function Header({ user, onLogin, onLogout, isScrolled }) {
                   onClick={onLogout}
                   id="logout-button"
                 >
-                  Çıkış
+                  Çıkış Yap
                 </button>
               </div>
             )}
@@ -129,7 +129,7 @@ export default function Header({ user, onLogin, onLogout, isScrolled }) {
               target="_blank" 
               rel="noopener noreferrer" 
               className="header__slogan-accent"
-            >İhanete</a> Yer Verme!
+            >İhanete</a> İZİN VERME!
           </span>
         </div>
       </div>
