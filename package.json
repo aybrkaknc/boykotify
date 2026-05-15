@@ -1,7 +1,7 @@
 {
   "name": "boykotify",
   "private": true,
-  "version": "0.0.255",
+  "version": "0.0.259",
   "type": "module",
   "scripts": {
     "dev": "vite",

@@ -15,6 +15,44 @@
   overflow-x: hidden;
 }
 
+.app__footer-info {
+  position: fixed;
+  bottom: calc(var(--marquee-height) + 12px);
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.35);
+  font-family: var(--font-body);
+  z-index: 90;
+  pointer-events: none; /* Metin üzerine gelince alttaki elemanları engellemesin */
+  letter-spacing: 0.5px;
+  text-transform: none;
+}
+
+.app__footer-info a {
+  pointer-events: auto; /* Link tıklanabilir olsun */
+  color: var(--color-boycott);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s, text-decoration 0.2s;
+}
+
+.app__footer-info a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+/* Mobilde Marquee üste taşındığı için FooterInfo'yu da Marquee'nin altına veya Header'ın üstüne al */
+@media (max-width: 640px) {
+  .app__footer-info {
+    bottom: auto;
+    top: calc(var(--header-height) + var(--marquee-height) + 8px);
+    font-size: 0.65rem;
+    padding: 0 10px;
+  }
+}
+
 /* ================================================
    Arka Plan Kayan Metin (Milli Bilinç)
    ================================================ */

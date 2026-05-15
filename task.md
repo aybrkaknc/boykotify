@@ -13,4 +13,6 @@
   - Bileşen içindeki kontrolleri (Header kısmını) tamamen temizle.
   - Header'ın altında kalmaması için layout (padding/margin) ayarlarını yap.
 - [x] **Test ve Doğrulama**
-  - Geçiş akıcılığı ve yerleşimlerin (responsive) doğruluğu kontrol edilecek.
+  - [x] Ana sayfadaki gereksiz kaydırma çubuğunun kaldırılması (v0.253-v0.255)
+  - [x] Projenin derlenmesi ve canlıya alınması (Git Push)
+  - [ ] TrackList veya ManualInput bileşenleri için kullanıcı doğrulaması bekleniyor

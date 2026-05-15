@@ -75,9 +75,9 @@ export default function Header({
                       <h4>NASIL KULLANILIR?</h4>
                       <ol>
                         <li>Spotify hesabınızla güvenli giriş yapın.</li>
-                        <li>Taratmak istediğiniz <strong>herkese açık (Public)</strong> veya <strong>size ait</strong> bir çalma listesi linkini kutuya yapıştırın.</li>
-                        <li>Linkin <code>spotify.com/playlist/...</code> formatında olduğundan emin olun (Albüm veya sanatçı linkleri taranmaz).</li>
-                        <li>Boykotlu şarkıları saniyeler içinde tespit edip listenizden temizleyin.</li>
+                        <li><strong>Kütüphaneden Seç</strong> ile listelerinizi saniyeler içinde tarayın ve boykotlu şarkıları <strong>tek tıkla temizleyin.</strong></li>
+                        <li><strong>Elle Gir</strong> seçeneği ile çalma listesi linkini yapıştırarak da tarama yapabilirsiniz.</li>
+                        <li>Milli bilinci koruyun ve müziğinizi arındırın.</li>
                       </ol>
                     </div>
                     <div className="header__help-footer">

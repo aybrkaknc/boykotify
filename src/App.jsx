@@ -246,14 +246,14 @@ export default function App() {
     try {
       /* Çift çalışmayı ve URL'de kod kalmasını önlemek için anında temizle */
       window.history.replaceState({}, document.title, '/');
-      
+
       await exchangeCodeForToken(code);
       await loadUserProfile();
     } catch (err) {
       console.error('Token alınamadı:', err);
       /* Hata durumunda da URL'yi temizle ki loop'a girmesin */
       window.history.replaceState({}, document.title, '/');
-      
+
       setModalType('error');
       setError('Spotify hesabınızla bağlantı kurulamadı.');
       setErrorSolution('Mobil cihazlarda "Özel Mod" (Incognito) kullanıyorsanız giriş başarısız olabilir. Lütfen normal sekmede deneyin.');
@@ -272,7 +272,7 @@ export default function App() {
       await handleAuthCallback();
       await loadAllEntities();
     };
-    
+
     initApp();
   }, []);
 
@@ -293,7 +293,7 @@ export default function App() {
     try {
       const profile = await fetchUserProfile();
       setUser(profile);
-      
+
       /* Profil yüklendikten sonra playlistleri de çek */
       const playlists = await fetchUserPlaylists();
       setUserPlaylists(playlists);
@@ -371,7 +371,7 @@ export default function App() {
       /* 4. Tarama Operasyonu */
       const covers = await fetchPlaylistMetadata(playlistId);
       setScanningCovers(covers);
-      
+
       await new Promise(resolve => setTimeout(resolve, 8000));
 
       const [{ tracks, info: playlistInfo }, entities] = await Promise.all([
@@ -384,7 +384,7 @@ export default function App() {
       const matched = matchTracksWithEntities(tracks, entities);
       const score = calculatePatriotScore(matched);
       score.playlistInfo = playlistInfo;
-      
+
       setAllEntities(entities);
 
       const sortedMatched = matched.sort((a, b) => {
@@ -401,7 +401,7 @@ export default function App() {
       setIsLoading(false);
       setModalType('error');
       setError(err.message || 'Playlist bulunamadı veya taranırken bir sorun oluştu.');
-      
+
       /* Hata tipine göre akıllı çözüm önerisi */
       if (err.message.includes('ALBÜM') || err.message.includes('SANATÇI') || err.message.includes('ŞARKI')) {
         setErrorSolution('Spotify uygulamasında çalma listesinin üzerindeki üç noktaya tıklayın, "Paylaş" menüsünden "Link kopyala" seçeneğini kullanın.');
@@ -412,7 +412,7 @@ export default function App() {
       } else {
         setErrorSolution('Yardım ( ? ) menüsündeki link gereksinimlerini kontrol edin.');
       }
-      
+
       setErrorDetails(err.stack || err.message);
     } finally {
       setIsLoading(false);
@@ -440,7 +440,7 @@ export default function App() {
 
     } catch (err) {
       console.error('İşlem hatası:', err);
-      
+
       setModalType('error');
       setError('Şarkılar Spotify üzerinden işlenemedi.');
       setErrorSolution('Bağlantı hatası veya yetki eksikliği olabilir. Spotify oturumunuzu tazelemeyi deneyin.');
@@ -461,13 +461,18 @@ export default function App() {
     <div className="app" id="app-root">
       <RippleEffect />
       <BackgroundScroll />
+      {/* Alt Bilgi — Yapay Zeka Uyarı ve Geri Dönüş */}
+      <div className="app__footer-info">
+        Bu veri tabanı yapay zeka yardımıyla oluşturulmuştur. Lütfen KÜFRETMEDEN ÖNCE, yanlış veya eksik bilgiler için <a href="mailto:ayberk.akinci.temp@gmail.com">geri dönüş</a> sağlayın.
+      </div>
+
       {/* Sol Kenar — Sonsuz Kayan Sanatçı Listesi */}
       <BoycottMarquee entities={allEntities} />
 
-      <Header 
-        user={user} 
-        onLogin={handleLogin} 
-        onLogout={handleLogout} 
+      <Header
+        user={user}
+        onLogin={handleLogin}
+        onLogout={handleLogout}
         isScrolled={user && isHeaderScrolled}
         isPickerOpen={isPickerOpen}
         onTogglePicker={() => setIsPickerOpen(!isPickerOpen)}
@@ -487,15 +492,15 @@ export default function App() {
               <div className="app__hero-content">
                 <h2 className="app__hero-title">
                   <span className="app__hero-line hero-line-1">MÜZİĞİNDE</span>
-                  <a 
-                    href="https://www.youtube.com/playlist?list=PLCeSne8xqy-CaTlFHHzkrRA7bMASJCpSW" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
+                  <a
+                    href="https://www.youtube.com/playlist?list=PLCeSne8xqy-CaTlFHHzkrRA7bMASJCpSW"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="app__hero-accent app__hero-link app__hero-line hero-line-2"
                   >İHANETE</a>
                   <span className="app__hero-line hero-line-3">İZİN VERME!</span>
                 </h2>
-                
+
                 {!user && (
                   <button
                     className="app__hero-login-btn btn-sonar"
@@ -505,7 +510,7 @@ export default function App() {
                     <div className="btn-shine"></div>
                     <span className="btn-icon">
                       <svg viewBox="0 0 24 24" width="24" height="24">
-                        <path fill="currentColor" d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+                        <path fill="currentColor" d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
                       </svg>
                     </span>
                     <div className="btn-text-content">
@@ -517,8 +522,8 @@ export default function App() {
             </section>
 
             {user && !showManualInput && (
-              <PlaylistPicker 
-                playlists={userPlaylists} 
+              <PlaylistPicker
+                playlists={userPlaylists}
                 onSelect={handleScanPlaylist}
                 onManualInput={() => setShowManualInput(true)}
                 isPickerOpen={isPickerOpen}
@@ -530,8 +535,8 @@ export default function App() {
             {user && showManualInput && (
               <div className="app__manual-input-wrapper">
                 <PlaylistInput onSubmit={handleScanPlaylist} isLoading={isLoading} />
-                <button 
-                  className="app__picker-back-btn" 
+                <button
+                  className="app__picker-back-btn"
                   onClick={() => setShowManualInput(false)}
                 >
                   ← Listelerime Geri Dön
@@ -540,10 +545,10 @@ export default function App() {
             )}
           </>
         )}
-          {/* Modal Overlay (Hata veya Başarı) */}
+        {/* Modal Overlay (Hata veya Başarı) */}
         {error && (
-          <div 
-            className="app__error-overlay" 
+          <div
+            className="app__error-overlay"
             id="error-message"
             onClick={() => {
               setError('');
@@ -552,7 +557,7 @@ export default function App() {
               setShowErrorDetails(false);
             }}
           >
-            <div 
+            <div
               className={`app__error-modal ${modalType === 'success' ? 'app__error-modal--success' : ''}`}
               onClick={(e) => e.stopPropagation()}
             >
@@ -563,25 +568,25 @@ export default function App() {
                 {modalType === 'success' ? 'İşlem Başarılı!' : 'Bir Sorun Var'}
               </h3>
               <p className="app__error-text">{error}</p>
-              
+
               {errorSolution && (
                 <div className={`app__error-solution ${modalType === 'success' ? 'app__error-solution--success' : ''}`}>
                   <strong>💡 {modalType === 'success' ? 'Sonraki Adım: ' : 'Çözüm: '}</strong>{errorSolution}
                 </div>
               )}
-              
+
               {errorDetails && (
                 <div className="app__error-details-wrapper">
-                  <button 
-                    className="app__error-details-toggle" 
+                  <button
+                    className="app__error-details-toggle"
                     onClick={() => setShowErrorDetails(!showErrorDetails)}
                   >
                     {showErrorDetails ? 'Detayları Gizle ▲' : 'Hata Detayları ▼'}
                   </button>
                   {showErrorDetails && (
                     <div className="app__error-logs-container">
-                      <button 
-                        className="app__error-copy-btn" 
+                      <button
+                        className="app__error-copy-btn"
                         onClick={handleCopyLogs}
                       >
                         {isCopied ? 'Kopyalandı!' : 'Kopyala'}
@@ -592,8 +597,8 @@ export default function App() {
                 </div>
               )}
 
-              <button 
-                className="app__error-close" 
+              <button
+                className="app__error-close"
                 onClick={() => {
                   setError('');
                   setErrorSolution('');
@@ -613,10 +618,10 @@ export default function App() {
             <div className="app__loading-collage">
               {/* Gerçek kapak fotoğraflarını kullanarak kolaj oluştur */}
               {(scanningCovers.length > 0 ? [...Array(100)].map((_, i) => scanningCovers[i % scanningCovers.length]) : []).map((url, i) => (
-                <div 
-                  key={i} 
+                <div
+                  key={i}
                   className="app__collage-item"
-                  style={{ 
+                  style={{
                     backgroundImage: `url(${url})`,
                     animationDelay: `${Math.random() * 2}s`
                   }}
@@ -624,16 +629,16 @@ export default function App() {
               ))}
             </div>
             <div className="app__loading-overlay" />
-            
+
             <div className="app__radar-container">
               <div className="app__radar-circle"></div>
               <div className="app__radar-circle"></div>
               <div className="app__radar-circle"></div>
               <div className="app__radar-circle"></div>
-              
+
               <div className="app__loading-text-wrapper">
                 <AnimatePresence mode="wait">
-                  <motion.h3 
+                  <motion.h3
                     key={loadingMessageIndex}
                     className="app__loading-text"
                     initial={{ opacity: 0, y: 10 }}
@@ -673,8 +678,8 @@ export default function App() {
                   ← BİR PLAYLİST DAHA
                 </button>
                 <div className="desktop-scoreboard-wrapper">
-                  <ScoreCard 
-                    stats={stats} 
+                  <ScoreCard
+                    stats={stats}
                     activeFilter={activeFilter}
                     onFilterChange={setActiveFilter}
                   />
@@ -691,11 +696,11 @@ export default function App() {
                 />
               </div>
             </div>
-            
+
             {/* Mobil Sticky Bottom Scoreboard */}
             <div className="app__mobile-scoreboard-wrapper">
-              <ScoreCard 
-                stats={stats} 
+              <ScoreCard
+                stats={stats}
                 activeFilter={activeFilter}
                 onFilterChange={setActiveFilter}
               />
