@@ -1,6 +1,7 @@
 # Boykotify
 
-Boykotify; Spotify listelerinizdeki terör sempatizanlarını ve Türk düşmanlarını ayıklayan bir milli şuur projesidir. Atatürk'ün izinde, vatanın birliğine kastedenlere dijital alanda geçit vermiyoruz. Sanat kisvesi altında ihaneti besleyenleri tespit edin, listenizden silin! Türk istiklalini ve Cumhuriyetini korumak için her alanda uyanığız. 
+Boykotify; Spotify listelerinizdeki terör sempatizanlarını ve Türk düşmanlarını ayıklayan bir milli şuur projesidir. Atatürk'ün izinde, vatanın birliğine kastedenlere dijital alanda geçit vermiyoruz. Sanat kisvesi altında ihaneti besleyenleri tespit edin, listenizden silin! Türk istiklalini ve Cumhuriyetini korumak için her alanda uyanığız.
+https://boykotify.vercel.app
 
 Ne Mutlu Türküm Diyene!
 
